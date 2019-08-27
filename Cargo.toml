@@ -1,0 +1,11 @@
+[package]
+name = "wasmtime-ruby"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+name = "wasmtime"
+crate-type = ["cdylib"]
+
+[dependencies]
+helix = "0.7.5"
