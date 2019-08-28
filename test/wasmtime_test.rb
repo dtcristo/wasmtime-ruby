@@ -6,7 +6,12 @@ class WasmtimeTest < Minitest::Test
     refute_nil Wasmtime::VERSION
   end
 
-  def test_hello
-    assert_equal('Hello from wasmtime!', Wasmtime.hello)
+  def test_markdown
+    assert_equal "<h1>Hello, Ruby!</h1>\n",
+                 Wasmtime.invoke(
+                   'examples/markdown/markdown.wasm',
+                   'render',
+                   ['# Hello, Ruby!']
+                 )
   end
 end
