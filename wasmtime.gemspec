@@ -3,19 +3,19 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'wasmtime/version'
 
 Gem::Specification.new do |spec|
-  spec.name         = 'wasmtime'
-  spec.version      = Wasmtime::VERSION
-  spec.authors      = ['David Cristofaro']
-  spec.email        = ['david@dtcristo.com']
+  spec.name = 'wasmtime'
+  spec.version = Wasmtime::VERSION
+  spec.authors = ['David Cristofaro']
+  spec.email = %w[david@dtcristo.com]
 
-  spec.summary      = 'Wasmtime WebAssembly runtime integration'
-  spec.homepage     = 'https://github.com/dtcristo/wasmtime-ruby'
-  spec.license      = 'MIT'
+  spec.summary = 'Wasmtime WebAssembly runtime integration'
+  spec.homepage = 'https://github.com/dtcristo/wasmtime-ruby'
+  spec.license = 'MIT'
 
   spec.platform = Gem::Platform::RUBY
   spec.files = Dir['{lib,ext,src}/**/*', '[A-Z]*'] - Dir['Rakefile']
   spec.extensions = Dir['ext/**/extconf.rb']
-  spec.require_paths = ['lib']
+  spec.require_paths = %w[lib]
 
   spec.add_runtime_dependency 'helix_runtime', '~> 0.7.5'
 
