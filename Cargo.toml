@@ -9,4 +9,8 @@ name = "wasmtime"
 crate-type = ["cdylib"]
 
 [dependencies]
+cranelift-codegen = "0.40.0"
+cranelift-native = "0.40.0"
 helix = "0.7.5"
+wasmtime-interface-types = "0.3.0"
+wasmtime-jit = "0.3.0"
