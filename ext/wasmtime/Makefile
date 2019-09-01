@@ -1,5 +1,8 @@
+all:
+	cargo build --release
+
 clean:
-	rake clobber
+	cargo clean
 
 install:
-	rake build
+	cp target/release/libwasmtime_ruby.dylib lib/wasmtime/native.bundle

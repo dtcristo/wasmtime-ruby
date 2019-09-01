@@ -1,4 +1,4 @@
-require 'helix_runtime'
+module Wasmtime; end
 
-require 'wasmtime/native'
 require 'wasmtime/version'
+require 'wasmtime/native'

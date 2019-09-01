@@ -17,8 +17,6 @@ Gem::Specification.new do |spec|
   spec.extensions = Dir['ext/**/extconf.rb']
   spec.require_paths = %w[lib]
 
-  spec.add_runtime_dependency 'helix_runtime', '~> 0.7.5'
-
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'rake', '~> 12.3'
   spec.add_development_dependency 'minitest', '~> 5.11'

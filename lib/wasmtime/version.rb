@@ -1,3 +1,3 @@
-class Wasmtime
+module Wasmtime
   VERSION = '0.1.0'
 end

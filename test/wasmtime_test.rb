@@ -7,11 +7,8 @@ class WasmtimeTest < Minitest::Test
   end
 
   def test_markdown
-    assert_equal "<h1>Hello, Ruby!</h1>\n",
-                 Wasmtime.invoke(
-                   'examples/markdown/markdown.wasm',
-                   'render',
-                   ['# Hello, Ruby!']
-                 )
+    instance = Wasmtime::Instance.new('examples/markdown/markdown.wasm')
+    result = instance.invoke('render', ['# Hello, Ruby!'])
+    assert_equal "<h1>Hello, Ruby!</h1>\n", result
   end
 end
