@@ -11,4 +11,13 @@ class WasmtimeTest < Minitest::Test
     result = instance.invoke('render', ['# Hello, Ruby!'])
     assert_equal "<h1>Hello, Ruby!</h1>\n", result
   end
+
+  def test_require_patch
+    markdown_lib = File.expand_path('../examples/markdown', __dir__)
+    $LOAD_PATH.unshift(markdown_lib) unless $LOAD_PATH.include?(markdown_lib)
+    assert_equal true, require('markdown')
+    assert_equal false, require('markdown.wasm')
+    assert_equal false, require('markdown')
+    assert_raises(LoadError) { require('missing.wasm') }
+  end
 end
