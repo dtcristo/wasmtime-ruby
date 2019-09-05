@@ -24,5 +24,7 @@ class WasmtimeTest < Minitest::Test
     assert_equal false, require('markdown.wasm')
     assert_equal false, require('markdown')
     assert_raises(LoadError) { require('missing.wasm') }
+    result = Markdown.render('# Hello, Ruby!')
+    assert_equal "<h1>Hello, Ruby!</h1>\n", result
   end
 end
