@@ -23,6 +23,15 @@ methods!(
             .wrap_data(instance, &*INSTANCE_WRAPPER)
     }
 
+    fn instance_exports() -> Array {
+        let instance = itself.get_data_mut(&*INSTANCE_WRAPPER);
+        let mut exports = Array::new();
+        instance.exports().iter().for_each(|export| {
+            exports.push(RString::new_utf8(export));
+        });
+        exports
+    }
+
     fn instance_invoke(export: RString, args: Array) -> AnyObject {
         let export = export.unwrap().to_string();
         let args: Vec<WasmValue> = args.unwrap().into_iter().map(|o| o.into()).collect();
@@ -49,6 +58,7 @@ pub extern "C" fn Init_native() {
             .define_nested_class("Instance", None)
             .define(|instance| {
                 instance.def_self("new", instance_new);
+                instance.def("exports", instance_exports);
                 instance.def("invoke", instance_invoke);
             });
     });

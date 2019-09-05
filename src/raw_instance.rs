@@ -1,4 +1,5 @@
 use std::fs;
+use wasmtime_environ::Export;
 use wasmtime_interface_types::{ModuleData, Value};
 use wasmtime_jit::{Context, InstanceHandle};
 
@@ -22,6 +23,16 @@ impl RawInstance {
         let data = ModuleData::new(&bytes).unwrap();
         let handle = cx.instantiate_module(None, &bytes).unwrap();
         RawInstance { cx, handle, data }
+    }
+
+    pub fn exports(&mut self) -> Vec<String> {
+        self.handle
+            .exports()
+            .filter_map(|(name, export)| match export {
+                Export::Function(_) => Some(name.to_string()),
+                _ => None,
+            })
+            .collect()
     }
 
     pub fn invoke(&mut self, export: &str, args: &[WasmValue]) -> Vec<WasmValue> {

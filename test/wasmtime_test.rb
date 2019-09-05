@@ -12,6 +12,11 @@ class WasmtimeTest < Minitest::Test
     assert_equal "<h1>Hello, Ruby!</h1>\n", result
   end
 
+  def test_exports
+    instance = Wasmtime::Instance.new('examples/markdown/markdown.wasm')
+    assert_includes instance.exports, 'render'
+  end
+
   def test_require_patch
     markdown_lib = File.expand_path('../examples/markdown', __dir__)
     $LOAD_PATH.unshift(markdown_lib) unless $LOAD_PATH.include?(markdown_lib)
