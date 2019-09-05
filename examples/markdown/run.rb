@@ -1,7 +1,7 @@
+dir = File.expand_path(__dir__)
+$LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir)
+
 require 'wasmtime'
+require 'markdown'
 
-# Load WASM module and create instance
-Markdown = Wasmtime::Instance.new('markdown.wasm')
-
-# Invoke `render` function on WASM instance
-puts Markdown.invoke('render', ['# Hello, Ruby!'])
+puts Markdown.render('# Hello, Ruby!')
