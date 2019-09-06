@@ -5,14 +5,14 @@ use wasmtime_jit::{Context, InstanceHandle};
 
 use crate::wasm_value::WasmValue;
 
-pub struct RawInstance {
+pub struct Instance {
     cx: Context,
     handle: InstanceHandle,
     data: ModuleData,
 }
 
-impl RawInstance {
-    pub fn new(path: String) -> RawInstance {
+impl Instance {
+    pub fn new(path: String) -> Instance {
         let bytes = fs::read(path).unwrap();
         let isa = {
             let isa_builder = cranelift_native::builder().unwrap();
@@ -22,7 +22,7 @@ impl RawInstance {
         let mut cx = Context::with_isa(isa);
         let data = ModuleData::new(&bytes).unwrap();
         let handle = cx.instantiate_module(None, &bytes).unwrap();
-        RawInstance { cx, handle, data }
+        Instance { cx, handle, data }
     }
 
     pub fn exports(&mut self) -> Vec<String> {

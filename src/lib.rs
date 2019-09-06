@@ -1,29 +1,29 @@
-mod raw_instance;
+mod instance;
 mod wasm_value;
 
 use lazy_static::lazy_static;
 use rutie::{class, methods, module, wrappable_struct, AnyObject, Array, Module, Object, RString};
 
-use crate::raw_instance::RawInstance;
+use crate::instance::Instance;
 use crate::wasm_value::WasmValue;
 
-wrappable_struct!(RawInstance, InstanceWrapper, INSTANCE_WRAPPER);
-module!(Wasmtime);
-class!(Instance);
+wrappable_struct!(Instance, InstanceWrapper, INSTANCE_WRAPPER);
+module!(RubyWasmtime);
+class!(RubyInstance);
 
 #[rustfmt::skip]
 methods!(
-    Instance,
+    RubyInstance,
     itself,
 
-    fn instance_new(path: RString) -> AnyObject {
-        let instance = RawInstance::new(path.unwrap().to_string());
+    fn ruby_instance_new(path: RString) -> AnyObject {
+        let instance = Instance::new(path.unwrap().to_string());
         Module::from_existing("Wasmtime")
             .get_nested_class("Instance")
             .wrap_data(instance, &*INSTANCE_WRAPPER)
     }
 
-    fn instance_exports() -> Array {
+    fn ruby_instance_exports() -> Array {
         let instance = itself.get_data_mut(&*INSTANCE_WRAPPER);
         let mut exports = Array::new();
         instance.exports().iter().for_each(|export| {
@@ -32,7 +32,7 @@ methods!(
         exports
     }
 
-    fn instance_invoke(export: RString, args: Array) -> AnyObject {
+    fn ruby_instance_invoke(export: RString, args: Array) -> AnyObject {
         let export = export.unwrap().to_string();
         let args: Vec<WasmValue> = args.unwrap().into_iter().map(|o| o.into()).collect();
         let instance = itself.get_data_mut(&*INSTANCE_WRAPPER);
@@ -53,13 +53,13 @@ methods!(
 #[allow(non_snake_case)]
 #[no_mangle]
 pub extern "C" fn Init_native() {
-    Module::from_existing("Wasmtime").define(|wasmtime| {
-        wasmtime
+    Module::from_existing("Wasmtime").define(|module| {
+        module
             .define_nested_class("Instance", None)
-            .define(|instance| {
-                instance.def_self("new", instance_new);
-                instance.def("exports", instance_exports);
-                instance.def("invoke", instance_invoke);
+            .define(|class| {
+                class.def_self("new", ruby_instance_new);
+                class.def("exports", ruby_instance_exports);
+                class.def("invoke", ruby_instance_invoke);
             });
     });
 }
