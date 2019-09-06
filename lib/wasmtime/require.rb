@@ -18,7 +18,7 @@ module Kernel
   end
 
   unless defined? wasmtime_original_require_relative
-    alias_method :wasmtime_original_require_relative, :require
+    alias_method :wasmtime_original_require_relative, :require_relative
     private :wasmtime_original_require_relative
   end
 
