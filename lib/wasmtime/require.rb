@@ -1,7 +1,7 @@
 using Wasmtime::Refinements
 
 module Kernel
-  unless defined? wasmtime_original_require
+  unless defined?(wasmtime_original_require)
     alias_method :wasmtime_original_require, :require
     private :wasmtime_original_require
   end
@@ -17,7 +17,7 @@ module Kernel
     raise load_error
   end
 
-  unless defined? wasmtime_original_require_relative
+  unless defined?(wasmtime_original_require_relative)
     alias_method :wasmtime_original_require_relative, :require_relative
     private :wasmtime_original_require_relative
   end
@@ -26,7 +26,8 @@ module Kernel
     wasmtime_original_require_relative(path)
   rescue LoadError => load_error
     path = "#{path}.wasm" unless path.end_with?('.wasm')
-    absolute_path = File.expand_path(path, File.dirname(caller_locations[1].path))
+    absolute_path =
+      File.expand_path(path, File.dirname(caller_locations[1].path))
     return Wasmtime.load(absolute_path) if File.file?(absolute_path)
     raise load_error
   end
@@ -34,10 +35,11 @@ end
 
 module Wasmtime
   module_function
-  
+
   def load(absolute_path)
     return false if $LOADED_FEATURES.include?(absolute_path)
-    const = absolute_path.split(File::SEPARATOR).last.delete_suffix('.wasm').camelize
+    const =
+      absolute_path.split(File::SEPARATOR).last.delete_suffix('.wasm').camelize
     mod = Object.const_set(const, Module.new)
     instance = Wasmtime::Instance.new(absolute_path)
     instance.exports.each do |export|
