@@ -1,3 +1,3 @@
-# wasmtime-ruby
+# Wasmtime for Ruby
 
-Wasmtime WebAssembly runtime integration for Ruby.
+[Wasmtime](https://wasmtime.dev/) WebAssembly runtime integration for Ruby.
