@@ -5,6 +5,7 @@ require 'rake/testtask'
 
 import 'lib/tasks/build.rake'
 
+desc 'Format sources'
 task :format do
   sh 'cargo fmt'
   sh 'bundle',

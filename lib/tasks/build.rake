@@ -8,11 +8,13 @@ DLEXT = RbConfig::CONFIG['DLEXT']
 SO = File.expand_path("../../target/release/libwasmtime_ruby.#{SOEXT}", __dir__)
 DL = File.expand_path("../wasmtime/native.#{DLEXT}", __dir__)
 
+desc 'Remove build artifacts'
 task :clean do
   sh 'cargo clean'
   rm_rf SO
 end
 
+desc 'Build native extention'
 task :build do
   sh 'cargo build --release'
   cp SO, DL
