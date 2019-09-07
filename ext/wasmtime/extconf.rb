@@ -1,3 +1,3 @@
-unless system('cargo --version')
-  abort 'You must first install Rust (https://rustup.rs/)'
+if system('cargo --version')
+  abort 'Building native extention requires Rust (https://rustup.rs/).'
 end
