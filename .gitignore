@@ -3,5 +3,4 @@
 *.bundle
 *.dll
 *.so
-Cargo.lock
 Gemfile.lock
