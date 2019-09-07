@@ -12,6 +12,7 @@ module Kernel
     wasmtime_original_require(path)
   rescue LoadError => load_error
     path = "#{path}.wasm" unless path.end_with?('.wasm')
+
     if path.start_with?('.', '/', '~')
       absolute_path = File.expand_path(path)
       return Wasmtime.load(absolute_path) if File.file?(absolute_path)
