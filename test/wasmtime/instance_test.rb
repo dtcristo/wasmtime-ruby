@@ -10,7 +10,7 @@ module Wasmtime
       assert_equal "<h1>Hello, Ruby!</h1>\n", result
     end
 
-    def test_exports
+    def test_exports_includes_function
       instance = Instance.new('examples/markdown/markdown.wasm')
       assert_includes instance.exports, 'render'
     end
