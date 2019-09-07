@@ -12,10 +12,15 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/dtcristo/wasmtime-ruby'
   spec.license = 'MIT'
 
-  spec.platform = Gem::Platform::RUBY
-  spec.files = Dir['{lib,ext,src}/**/*', '[A-Z]*'] - Dir['Rakefile']
-  spec.extensions = Dir['ext/**/extconf.rb']
+  spec.files = Dir['{lib,ext,src}/**/*', 'Cargo.*', 'LICENSE', 'README.md']
   spec.require_paths = %w[lib]
+
+  if ENV['NATIVE_BUNDLE']
+    spec.platform = Gem::Platform::CURRENT
+  else
+    spec.platform = Gem::Platform::RUBY
+    spec.extensions = Dir['ext/**/extconf.rb']
+  end
 
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'rake', '~> 12.3'
