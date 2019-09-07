@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Wasmtime
   module Refinements
     refine String do

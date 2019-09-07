@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 task :clean do
   sh 'cargo clean'
   rm_rf File.expand_path('../wasmtime/native.bundle', __dir__)
