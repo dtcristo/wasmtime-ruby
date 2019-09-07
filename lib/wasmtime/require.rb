@@ -25,13 +25,9 @@ module Kernel
   end
 
   def require_relative(path)
-    wasmtime_original_require_relative(path)
-  rescue LoadError => load_error
-    path = "#{path}.wasm" unless path.end_with?('.wasm')
     absolute_path =
-      File.expand_path(path, File.dirname(caller_locations[1].path))
-    return Wasmtime.load(absolute_path) if File.file?(absolute_path)
-    raise load_error
+      File.expand_path(path, File.dirname(caller_locations[0].absolute_path))
+    require(absolute_path)
   end
 end
 
