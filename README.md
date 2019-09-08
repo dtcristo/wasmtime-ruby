@@ -1,6 +1,12 @@
-# Wasmtime for Ruby
-
-[Wasmtime](https://wasmtime.dev/) WebAssembly runtime integration for Ruby.
+<div align="center">
+  <h1>wasmtime-ruby</h1>
+  <p>
+    <strong
+      ><a href="https://wasmtime.dev/">Wasmtime</a> WebAssembly runtime
+      integration for Ruby.</strong
+    >
+  </p>
+</div>
 
 ## Usage
 
