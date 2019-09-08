@@ -32,3 +32,29 @@ require_relative 'markdown'
 
 puts Markdown.render('# Hello, Ruby!') #=> <h1>Hello, Ruby!</h1>
 ```
+
+## Development
+
+Install Ruby dependencies.
+
+```sh
+bundle install
+```
+
+Build Rust native extension.
+
+```sh
+rake build
+```
+
+Run test suite.
+
+```sh
+rake test
+```
+
+Format source code.
+
+```sh
+rake format
+```
