@@ -14,7 +14,7 @@ task :clean do
   rm_rf SO
 end
 
-desc 'Build native extention'
+desc 'Build native extension'
 task :build do
   sh 'cargo build --release'
   cp SO, DL
