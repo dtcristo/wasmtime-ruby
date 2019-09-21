@@ -50,7 +50,7 @@ rake build
 Run test suite.
 
 ```sh
-rake test
+rake spec
 ```
 
 Format source code.

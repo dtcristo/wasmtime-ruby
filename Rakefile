@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'rake/testtask'
+require 'rspec/core/rake_task'
 
 import 'lib/tasks/build.rake'
 
@@ -16,10 +16,7 @@ task :format do
      '**/{Rakefile,Gemfile}'
 end
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'test'
-  t.test_files = FileList['test/**/*_test.rb']
-end
+RSpec::Core::RakeTask.new(:spec)
 
-task test: :build
-task default: :test
+task spec: :build
+task default: :spec
