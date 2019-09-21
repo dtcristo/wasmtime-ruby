@@ -1,0 +1,16 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    name: Build and test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: "2.x"
+      - run: bundle install
+      - run: rake spec
