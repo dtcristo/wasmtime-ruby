@@ -12,6 +12,5 @@ jobs:
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: "2.x"
-      - run: gem install bundler
       - run: bundle install
       - run: rake spec
