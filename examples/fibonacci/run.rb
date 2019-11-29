@@ -1,4 +1,4 @@
 require 'wasmtime'
-require_relative 'target/wasm32-unknown-unknown/release/fibonacci'
+require_relative '../../wasm/fibonacci'
 
 puts Fibonacci.fib(11)

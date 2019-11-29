@@ -1,8 +1,6 @@
 # Markdown example
 
-Markdown renderer using `markdown.wasm` built from example code at
-[CraneStation/wasmtime-demos](https://github.com/CraneStation/wasmtime-demos/tree/master/markdown).
-This example demonstrates support for
+Markdown renderer, demonstrating support for
 [WebAssembly Interface Types](https://hacks.mozilla.org/2019/08/webassembly-interface-types/).
 
 ## Usage
