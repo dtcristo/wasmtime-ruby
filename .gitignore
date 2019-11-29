@@ -3,4 +3,7 @@ target/
 *.bundle
 *.dll
 *.so
+*.wasm
+Cargo.lock
+!/Cargo.lock
 Gemfile.lock
