@@ -14,6 +14,10 @@ task :wasm do
   cd '../markdown/'
   sh 'env WASM_INTERFACE_TYPES=1 wasm-pack build'
   cp 'pkg/markdown.wasm', '../'
+
+  cd '../types/'
+  sh 'env WASM_INTERFACE_TYPES=1 wasm-pack build'
+  cp 'pkg/types.wasm', '../'
 end
 
 desc 'Format sources'
