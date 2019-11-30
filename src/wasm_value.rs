@@ -25,7 +25,7 @@ impl From<AnyObject> for WasmValue {
                 Value::String(object.try_convert_to::<RString>().unwrap().to_string()).into()
             }
             ValueType::Fixnum => {
-                Value::I64(object.try_convert_to::<Fixnum>().unwrap().to_i64()).into()
+                Value::I32(object.try_convert_to::<Fixnum>().unwrap().to_i32()).into()
             }
             ValueType::Float => {
                 Value::F64(object.try_convert_to::<Float>().unwrap().to_f64()).into()
