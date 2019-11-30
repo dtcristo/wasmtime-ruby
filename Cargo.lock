@@ -1305,6 +1305,8 @@ version = "0.1.0"
 dependencies = [
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rutie 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "walrus 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "wasm-webidl-bindings 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasmtime 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasmtime-interface-types 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

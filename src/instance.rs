@@ -1,6 +1,7 @@
 use lazy_static::lazy_static;
 use rutie::{class, methods, wrappable_struct, AnyObject, Array, Module, Object, RString};
 use std::fs;
+use wasm_webidl_bindings::ast;
 use wasmtime as w;
 use wasmtime_interface_types as wit;
 
@@ -31,7 +32,8 @@ impl Instance {
     }
 
     pub fn exports(&mut self) -> Vec<String> {
-        self.instance
+        let exports: Vec<String> = self
+            .instance
             .borrow()
             .module()
             .borrow()
@@ -41,18 +43,82 @@ impl Instance {
                 w::ExternType::ExternFunc(_) => Some(e.name().to_string()),
                 _ => None,
             })
-            .collect()
+            .collect();
+
+        // let mut handle = self.instance.borrow().handle().clone();
+        // exports.iter().for_each(|export| {
+        //     let export_binding = self
+        //         .module_data
+        //         .binding_for_export(&mut handle, export)
+        //         .unwrap();
+        //     let params = export_binding.param_bindings().unwrap();
+        //     let results = export_binding.result_bindings().unwrap();
+        //     dbg!(decode_params(&params));
+        //     dbg!(decode_results(&results));
+        // });
+
+        exports
     }
 
     pub fn invoke(&mut self, export: &str, args: &[WasmValue]) -> Vec<WasmValue> {
         let args_native: Vec<wit::Value> = args.iter().map(|wv| wv.clone().into()).collect();
         self.module_data
             .invoke_export(&mut self.instance, export, &args_native)
-            .expect("Unable to invoke export")
+            .expect("unable to invoke export")
             .into_iter()
             .map(|v| v.into())
             .collect()
     }
+}
+
+fn decode_params(params: &[ast::IncomingBindingExpression]) -> Vec<String> {
+    params
+        .iter()
+        .map(|expr| match expr {
+            ast::IncomingBindingExpression::As(e) => match e.ty {
+                walrus::ValType::I32 => format!("Integer: {:?}", e.ty),
+                walrus::ValType::I64 => format!("Integer: {:?}", e.ty),
+                walrus::ValType::F32 => format!("Float: {:?}", e.ty),
+                walrus::ValType::F64 => format!("Float: {:?}", e.ty),
+                walrus::ValType::V128 | walrus::ValType::Anyref => {
+                    format!("Unsupported: {:?}", e.ty)
+                }
+            },
+            ast::IncomingBindingExpression::AllocUtf8Str(_) => format!("String"),
+            _ => panic!("unsupported incoming binding expr {:?}", expr),
+        })
+        .collect()
+}
+
+fn decode_results(results: &[ast::OutgoingBindingExpression]) -> Vec<String> {
+    results
+        .iter()
+        .map(|expr| match expr {
+            ast::OutgoingBindingExpression::As(e) => match e.ty {
+                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::UnsignedLong) => {
+                    format!("Integer(U32): {:?}", e.ty)
+                }
+                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::Long) => {
+                    format!("Integer(I32): {:?}", e.ty)
+                }
+                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::LongLong) => {
+                    format!("Integer(I64): {:?}", e.ty)
+                }
+                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::UnsignedLongLong) => {
+                    format!("Integer(U64): {:?}", e.ty)
+                }
+                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::Float) => {
+                    format!("Float(F32): {:?}", e.ty)
+                }
+                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::Double) => {
+                    format!("Float(F64): {:?}", e.ty)
+                }
+                _ => format!("Unsupported: {:?}", e.ty),
+            },
+            ast::OutgoingBindingExpression::Utf8Str(_) => format!("String"),
+            _ => panic!("unsupported outgoing binding expr {:?}", expr),
+        })
+        .collect()
 }
 
 wrappable_struct!(Instance, InstanceWrapper, INSTANCE_WRAPPER);
