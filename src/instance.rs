@@ -1,19 +1,27 @@
 use lazy_static::lazy_static;
-use rutie::{class, methods, wrappable_struct, AnyObject, Array, Module, Object, RString};
+use rutie::{
+    class, methods, wrappable_struct, AnyObject, Array, Hash, Module, NilClass, Object, RString,
+    Symbol,
+};
+use std::collections::HashMap;
 use std::fs;
-use wasm_webidl_bindings::ast;
+use std::rc::Rc;
 use wasmtime as w;
 use wasmtime_interface_types as wit;
 
+use crate::function::Function;
+use crate::memory::Memory;
 use crate::wasm_value::WasmValue;
 
 pub struct Instance {
     instance: w::HostRef<w::Instance>,
-    module_data: wit::ModuleData,
+    module_data: Rc<wit::ModuleData>,
+    functions: HashMap<String, Function>,
+    memories: HashMap<String, Memory>,
 }
 
 impl Instance {
-    pub fn new(path: String) -> Instance {
+    pub fn new(path: String) -> Self {
         let wasm = fs::read(path).unwrap();
 
         let config = w::Config::new();
@@ -23,14 +31,19 @@ impl Instance {
         let imports: Vec<w::Extern> = Vec::new();
         let instance = w::HostRef::new(w::Instance::new(&store, &module, &imports).unwrap());
 
-        let module_data = wit::ModuleData::new(&wasm).unwrap();
+        let module_data = Rc::new(wit::ModuleData::new(&wasm).unwrap());
+
+        let (functions, memories) = parse_exports(instance.clone(), module_data.clone());
 
         Instance {
             instance,
             module_data,
+            functions,
+            memories,
         }
     }
 
+    // TODO: Delete this
     pub fn exports(&mut self) -> Vec<String> {
         let exports: Vec<String> = self
             .instance
@@ -44,18 +57,6 @@ impl Instance {
                 _ => None,
             })
             .collect();
-
-        // let mut handle = self.instance.borrow().handle().clone();
-        // exports.iter().for_each(|export| {
-        //     let export_binding = self
-        //         .module_data
-        //         .binding_for_export(&mut handle, export)
-        //         .unwrap();
-        //     let params = export_binding.param_bindings().unwrap();
-        //     let results = export_binding.result_bindings().unwrap();
-        //     dbg!(decode_params(&params));
-        //     dbg!(decode_results(&results));
-        // });
 
         exports
     }
@@ -71,54 +72,36 @@ impl Instance {
     }
 }
 
-fn decode_params(params: &[ast::IncomingBindingExpression]) -> Vec<String> {
-    params
-        .iter()
-        .map(|expr| match expr {
-            ast::IncomingBindingExpression::As(e) => match e.ty {
-                walrus::ValType::I32 => format!("Integer: {:?}", e.ty),
-                walrus::ValType::I64 => format!("Integer: {:?}", e.ty),
-                walrus::ValType::F32 => format!("Float: {:?}", e.ty),
-                walrus::ValType::F64 => format!("Float: {:?}", e.ty),
-                walrus::ValType::V128 | walrus::ValType::Anyref => {
-                    format!("Unsupported: {:?}", e.ty)
-                }
-            },
-            ast::IncomingBindingExpression::AllocUtf8Str(_) => format!("String"),
-            _ => panic!("unsupported incoming binding expr {:?}", expr),
-        })
-        .collect()
-}
+fn parse_exports(
+    instance: w::HostRef<w::Instance>,
+    module_data: Rc<wit::ModuleData>,
+) -> (HashMap<String, Function>, HashMap<String, Memory>) {
+    let mut functions = HashMap::new();
+    let mut memories = HashMap::new();
 
-fn decode_results(results: &[ast::OutgoingBindingExpression]) -> Vec<String> {
-    results
+    instance
+        .borrow()
+        .module()
+        .borrow()
+        .exports()
         .iter()
-        .map(|expr| match expr {
-            ast::OutgoingBindingExpression::As(e) => match e.ty {
-                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::UnsignedLong) => {
-                    format!("Integer(U32): {:?}", e.ty)
-                }
-                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::Long) => {
-                    format!("Integer(I32): {:?}", e.ty)
-                }
-                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::LongLong) => {
-                    format!("Integer(I64): {:?}", e.ty)
-                }
-                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::UnsignedLongLong) => {
-                    format!("Integer(U64): {:?}", e.ty)
-                }
-                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::Float) => {
-                    format!("Float(F32): {:?}", e.ty)
-                }
-                ast::WebidlTypeRef::Scalar(ast::WebidlScalarType::Double) => {
-                    format!("Float(F64): {:?}", e.ty)
-                }
-                _ => format!("Unsupported: {:?}", e.ty),
-            },
-            ast::OutgoingBindingExpression::Utf8Str(_) => format!("String"),
-            _ => panic!("unsupported outgoing binding expr {:?}", expr),
-        })
-        .collect()
+        .for_each(|export| match export.r#type() {
+            w::ExternType::ExternFunc(_) => {
+                let function = Function::new(
+                    instance.clone(),
+                    module_data.clone(),
+                    export.name().to_string(),
+                );
+                functions.insert(export.name().to_string(), function);
+            }
+            w::ExternType::ExternMemory(_) => {
+                let memory = Memory::new(export.name().to_string());
+                memories.insert(export.name().to_string(), memory);
+            }
+            _ => {}
+        });
+
+    (functions, memories)
 }
 
 wrappable_struct!(Instance, InstanceWrapper, INSTANCE_WRAPPER);
@@ -129,7 +112,7 @@ methods!(
     RubyInstance,
     itself,
 
-    fn ruby_instance_new(path: RString) -> AnyObject {
+    fn ruby_instance_new(path: RString) -> RubyInstance {
         let instance = Instance::new(path.unwrap().to_string());
         Module::from_existing("Wasmtime")
             .get_nested_class("Instance")
@@ -143,6 +126,38 @@ methods!(
             exports.push(RString::new_utf8(export));
         });
         exports
+    }
+
+    fn ruby_instance_functions() -> NilClass {
+        let instance = itself.get_data_mut(&*INSTANCE_WRAPPER);
+
+        instance.functions.iter().for_each(|(export_name, function)| {
+            println!("{}: {:?} -> {:?}", export_name, &function.param_types, &function.result_types);
+        });
+
+        // let mut functions = Hash::new();
+        // instance.exports().iter().for_each(|export| {
+        //     let mut function = Hash::new();
+        //     let mut params = Array::new();
+        //     let decoded_params =
+        //     functions.store(Symbol::new("params"), params);
+        //     let mut result = Array::new();
+        //     if results.len() == 1 {
+        //         results.into_iter().next().unwrap().into()
+        //     } else {
+        //         let mut results_array = Array::new();
+        //         for result in results.into_iter() {
+        //             let object: AnyObject = result.into();
+        //             results_array.push(object);
+        //         }
+        //         results_array.into()
+        //     }
+        //     functions.store(Symbol::new("result"), function);
+
+        //     functions.store(Symbol::new(export), function);
+        // });
+        // exports
+        NilClass::new()
     }
 
     fn ruby_instance_invoke(export: RString, args: Array) -> AnyObject {
@@ -170,6 +185,7 @@ pub fn ruby_init() {
             .define(|class| {
                 class.def_self("new", ruby_instance_new);
                 class.def("exports", ruby_instance_exports);
+                class.def("functions", ruby_instance_functions);
                 class.def("invoke", ruby_instance_invoke);
             });
     });

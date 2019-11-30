@@ -1,4 +1,6 @@
+mod function;
 mod instance;
+mod memory;
 mod wasm_value;
 
 #[allow(non_snake_case)]

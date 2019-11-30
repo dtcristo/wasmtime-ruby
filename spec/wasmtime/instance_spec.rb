@@ -45,35 +45,70 @@ describe Wasmtime::Instance do
       expect(result).to include('str_string')
     end
 
-    xit 'will invoke void' do
-      result = subject.invoke('void')
-      expect(result).to be_nil
+    it 'has functions' do
+      functions = subject.functions
+      expect(functions).to be_nil
     end
+
+    # it 'will invoke void' do
+    #   result = subject.invoke('void')
+    #   expect(result).to be_nil
+    # end
+
+    # it 'will invoke u8_u8' do
+    #   result = subject.invoke('u8_u8', [42])
+    #   expect(result).to eq(43)
+    # end
+
+    # it 'will invoke i8_i8' do
+    #   result = subject.invoke('i8_i8', [-42])
+    #   expect(result).to eq(-41)
+    # end
+
+    # it 'will invoke u16_u16' do
+    #   result = subject.invoke('u16_u16', [42])
+    #   expect(result).to eq(43)
+    # end
+
+    # it 'will invoke i16_i16' do
+    #   result = subject.invoke('i16_i16', [-42])
+    #   expect(result).to eq(-41)
+    # end
 
     it 'will invoke u32_u32' do
       result = subject.invoke('u32_u32', [42])
-      expect(result).to eq(42)
+      expect(result).to eq(43)
     end
 
     it 'will invoke i32_i32' do
       result = subject.invoke('i32_i32', [-42])
-      expect(result).to eq(-42)
+      expect(result).to eq(-41)
     end
 
-    xit 'will invoke f32_f32' do
-      result = subject.invoke('f32_f32', [3.14159])
-      expect(result).to eq(3.14159)
-    end
+    # it 'will invoke usize_usize' do
+    #   result = subject.invoke('usize_usize', [42])
+    #   expect(result).to eq(43)
+    # end
 
-    xit 'will invoke f64_f64' do
-      result = subject.invoke('f64_f64', [3.14159])
-      expect(result).to eq(3.14159)
-    end
+    # it 'will invoke isize_isize' do
+    #   result = subject.invoke('isize_isize', [-42])
+    #   expect(result).to eq(-41)
+    # end
 
-    xit 'will invoke bool_bool' do
-      result = subject.invoke('bool_bool', [true])
-      expect(result).to eq(false)
-    end
+    # it 'will invoke f32_f32' do
+    #   result = subject.invoke('f32_f32', [3.14159])
+    #   expect(result).to eq(4.14159)
+    # end
+
+    # it 'will invoke f64_f64' do
+    #   result = subject.invoke('f64_f64', [3.14159])
+    #   expect(result).to eq(4.14159)
+    # end
+
+    # it 'will invoke bool_bool' do
+    #   result = subject.invoke('bool_bool', [true])
+    #   expect(result).to eq(false)
+    # end
 
     it 'will invoke str_string' do
       result = subject.invoke('str_string', ['Ruby'])
