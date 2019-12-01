@@ -48,7 +48,7 @@ impl Instance {
                     functions.insert(export.name().to_string(), function);
                 }
                 w::ExternType::ExternMemory(_) => {
-                    let memory = Memory::new(export.name().to_string());
+                    let memory = Memory::new();
                     memories.insert(export.name().to_string(), memory);
                 }
                 _ => {}

@@ -1,9 +1,7 @@
-pub struct Memory {
-    pub export_name: String,
-}
+pub struct Memory {}
 
 impl Memory {
-    pub fn new(export_name: String) -> Self {
-        Memory { export_name }
+    pub fn new() -> Self {
+        Memory {}
     }
 }

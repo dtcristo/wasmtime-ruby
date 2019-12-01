@@ -14,7 +14,7 @@ use crate::wasm_value::WasmValue;
 pub struct Function {
     instance: w::HostRef<w::Instance>,
     module_data: Rc<wit::ModuleData>,
-    pub export_name: String,
+    export_name: String,
     pub param_types: Vec<RubyType>,
     pub result_types: Vec<RubyType>,
 }
