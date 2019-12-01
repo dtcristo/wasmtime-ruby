@@ -117,24 +117,6 @@ methods!(
     RubyFunction,
     itself,
 
-    fn ruby_function_call(args: Array) -> AnyObject {
-        let function = itself.get_data_mut(&*FUNCTION_WRAPPER);
-        let args: Vec<WasmValue> = args.unwrap().into_iter().map(|o| o.into()).collect();
-
-        let results = function.call(&args[..]);
-
-        if results.len() == 1 {
-            results.into_iter().next().unwrap().into()
-        } else {
-            let mut results_array = Array::new();
-            for result in results.into_iter() {
-                let object: AnyObject = result.into();
-                results_array.push(object);
-            }
-            results_array.into()
-        }
-    }
-
     fn ruby_function_signature() -> Hash {
         let function = itself.get_data(&*FUNCTION_WRAPPER);
 
@@ -162,6 +144,24 @@ methods!(
 
         signature
     }
+
+    fn ruby_function_call(args: Array) -> AnyObject {
+        let function = itself.get_data_mut(&*FUNCTION_WRAPPER);
+        let args: Vec<WasmValue> = args.unwrap().into_iter().map(|o| o.into()).collect();
+
+        let results = function.call(&args[..]);
+
+        if results.len() == 1 {
+            results.into_iter().next().unwrap().into()
+        } else {
+            let mut results_array = Array::new();
+            for result in results.into_iter() {
+                let object: AnyObject = result.into();
+                results_array.push(object);
+            }
+            results_array.into()
+        }
+    }
 );
 
 pub fn ruby_init() {
@@ -169,8 +169,8 @@ pub fn ruby_init() {
         module
             .define_nested_class("Function", None)
             .define(|class| {
-                class.def("call", ruby_function_call);
                 class.def("signature", ruby_function_signature);
+                class.def("call", ruby_function_call);
             });
     });
 }
