@@ -1,7 +1,15 @@
+use lazy_static::lazy_static;
+use rutie::{
+    class, methods, wrappable_struct, AnyObject, Array, Hash, Module, NilClass, Object, RString,
+    Symbol,
+};
 use std::rc::Rc;
 use wasm_webidl_bindings::ast;
 use wasmtime as w;
 use wasmtime_interface_types as wit;
+
+use crate::ruby_type::RubyType;
+use crate::wasm_value::WasmValue;
 
 pub struct Function {
     instance: w::HostRef<w::Instance>,
@@ -34,17 +42,22 @@ impl Function {
             result_types,
         }
     }
-}
 
-#[derive(Debug)]
-pub enum RubyType {
-    Integer32,
-    Integer64,
-    Float32,
-    Float64,
-    String,
-    Boolean,
-    Unsupported,
+    pub fn call(&mut self, args: &[WasmValue]) -> Vec<WasmValue> {
+        let args_native: Vec<wit::Value> = args.iter().map(|wv| wv.clone().into()).collect();
+        self.module_data
+            .invoke_export(&mut self.instance, &self.export_name, &args_native)
+            .expect("unable to invoke export")
+            .into_iter()
+            .map(|v| v.into())
+            .collect()
+    }
+
+    pub fn into_ruby(self) -> RubyFunction {
+        Module::from_existing("Wasmtime")
+            .get_nested_class("Function")
+            .wrap_data(self, &*FUNCTION_WRAPPER)
+    }
 }
 
 fn decode_params(params: &[ast::IncomingBindingExpression]) -> Vec<RubyType> {
@@ -94,4 +107,70 @@ fn decode_results(results: &[ast::OutgoingBindingExpression]) -> Vec<RubyType> {
             _ => panic!("failed to decode results, unsupported type: {:?}", expr),
         })
         .collect()
+}
+
+wrappable_struct!(Function, FunctionWrapper, FUNCTION_WRAPPER);
+class!(RubyFunction);
+
+#[rustfmt::skip]
+methods!(
+    RubyFunction,
+    itself,
+
+    fn ruby_function_call(args: Array) -> AnyObject {
+        let function = itself.get_data_mut(&*FUNCTION_WRAPPER);
+        let args: Vec<WasmValue> = args.unwrap().into_iter().map(|o| o.into()).collect();
+
+        let results = function.call(&args[..]);
+
+        if results.len() == 1 {
+            results.into_iter().next().unwrap().into()
+        } else {
+            let mut results_array = Array::new();
+            for result in results.into_iter() {
+                let object: AnyObject = result.into();
+                results_array.push(object);
+            }
+            results_array.into()
+        }
+    }
+
+    fn ruby_function_signature() -> Hash {
+        let function = itself.get_data(&*FUNCTION_WRAPPER);
+
+        let mut params = Array::new();
+        for param in function.param_types.iter() {
+            params.push(RString::new_utf8(&format!("{:?}", param)));
+        }
+
+        let result: AnyObject = match function.result_types.len() {
+            0 => RubyType::NilClass.into(),
+            1 => function.result_types.iter().next().unwrap().clone().into(),
+            _ => {
+                let mut results = Array::new();
+                for r in function.result_types.iter() {
+                    let object: AnyObject = r.clone().into();
+                    results.push(object);
+                }
+                results.into()
+            },
+        };
+
+        let mut signature = Hash::new();
+        signature.store(Symbol::new("params"), params);
+        signature.store(Symbol::new("result"), result);
+
+        signature
+    }
+);
+
+pub fn ruby_init() {
+    Module::from_existing("Wasmtime").define(|module| {
+        module
+            .define_nested_class("Function", None)
+            .define(|class| {
+                class.def("call", ruby_function_call);
+                class.def("signature", ruby_function_signature);
+            });
+    });
 }

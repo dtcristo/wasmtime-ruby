@@ -1,5 +1,5 @@
 pub struct Memory {
-    export_name: String,
+    pub export_name: String,
 }
 
 impl Memory {
