@@ -45,9 +45,9 @@ module Wasmtime
       absolute_path.split(File::SEPARATOR).last.delete_suffix('.wasm').camelize
     mod = Object.const_set(const, Module.new)
     instance = Wasmtime::Instance.new(absolute_path)
-    instance.exports.each do |export|
-      mod.define_singleton_method(export) do |*args|
-        instance.invoke(export, args)
+    instance.functions.each do |name, function|
+      mod.define_singleton_method(name) do |*args|
+        function.call(args)
       end
     end
     $LOADED_FEATURES << absolute_path
