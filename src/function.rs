@@ -172,9 +172,10 @@ pub extern "C" fn ruby_function_call(
 
     let results = function.call(&wasm_args[..]);
 
-    if results.len() == 1 {
-        results.into_iter().next().unwrap().into()
-    } else {
+    match results.len() {
+        0 => r::NilClass::new().into(),
+        1 => results.into_iter().next().unwrap().into(),
+        _ => {
         let mut results_array = Array::new();
         for result in results.into_iter() {
             let object: AnyObject = result.into();
@@ -182,6 +183,7 @@ pub extern "C" fn ruby_function_call(
         }
         results_array.into()
     }
+}
 }
 
 pub fn ruby_init() {

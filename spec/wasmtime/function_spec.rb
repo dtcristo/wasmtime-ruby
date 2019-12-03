@@ -47,8 +47,8 @@ describe Wasmtime::Function do
         it { is_expected.to eq(params: [], result: 'NilClass') }
       end
 
-      xdescribe '#call' do
-        subject { function.call() }
+      describe '#call' do
+        subject { function.call }
         it { is_expected.to be_nil }
       end
     end
