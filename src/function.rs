@@ -17,7 +17,7 @@ pub struct Function {
     module_data: Rc<wit::ModuleData>,
     export_name: String,
     param_types: Vec<RubyType>,
-    result_types: Vec<RubyType>,
+    result_type: RubyType,
 }
 
 impl Function {
@@ -33,14 +33,14 @@ impl Function {
         let params = export_binding.param_bindings().unwrap();
         let results = export_binding.result_bindings().unwrap();
         let param_types = parse_param_types(&params);
-        let result_types = parse_result_types(&results);
+        let result_type = parse_result_type(&results);
 
         Function {
             instance,
             module_data,
             export_name,
             param_types,
-            result_types,
+            result_type,
         }
     }
 
@@ -57,7 +57,7 @@ impl Function {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 enum RubyType {
     Integer32,
     Integer64,
@@ -92,12 +92,13 @@ fn parse_param_types(params: &[ast::IncomingBindingExpression]) -> Vec<RubyType>
         .collect()
 }
 
-fn parse_result_types(results: &[ast::OutgoingBindingExpression]) -> Vec<RubyType> {
-    results
-        .iter()
-        .map(|expr| match expr {
-            ast::OutgoingBindingExpression::As(e) => {
-                match e.ty {
+fn parse_result_type(results: &[ast::OutgoingBindingExpression]) -> RubyType {
+    match results.len() {
+        0 => RubyType::NilClass,
+        1 => {
+            let expr = results.first().unwrap();
+            match expr {
+                ast::OutgoingBindingExpression::As(e) => match e.ty {
                     ast::WebidlTypeRef::Scalar(s) => match s {
                         ast::WebidlScalarType::Byte
                         | ast::WebidlScalarType::Octet
@@ -116,15 +117,19 @@ fn parse_result_types(results: &[ast::OutgoingBindingExpression]) -> Vec<RubyTyp
                         _ => panic!("failed to decode results, unsupported type: ({:?})", s),
                     },
                     _ => panic!("failed to decode results, unsupported type: {:?}", e.ty),
-                }
+                },
+                ast::OutgoingBindingExpression::Utf8Str(_) => RubyType::String,
+                _ => panic!("failed to decode results, unsupported type: {:?}", expr),
             }
-            ast::OutgoingBindingExpression::Utf8Str(_) => RubyType::String,
-            _ => panic!("failed to decode results, unsupported type: {:?}", expr),
-        })
-        .collect()
+        }
+        _ => panic!("multiple return values are not supported"),
+    }
 }
 
 fn translate_incoming(args: Array, param_types: &[RubyType]) -> Vec<wit::Value> {
+    if args.length() != param_types.len() {
+        panic!("incorrect arity");
+    }
     args.into_iter()
         .zip(param_types)
         .map(|(arg, param_type)| match param_type {
@@ -185,11 +190,7 @@ methods!(
             params.push(RString::new_utf8(&format!("{:?}", param)));
         }
 
-        let result: AnyObject = match function.result_types.len() {
-            0 => RubyType::NilClass.into(),
-            1 => function.result_types.first().unwrap().clone().into(),
-            _ => panic!("multiple return types are not supported"),
-        };
+        let result: AnyObject = function.result_type.into();
 
         let mut signature = Hash::new();
         signature.store(Symbol::new("params"), params);
