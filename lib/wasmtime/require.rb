@@ -46,9 +46,7 @@ module Wasmtime
     mod = Object.const_set(const, Module.new)
     instance = Wasmtime::Instance.new(absolute_path)
     instance.functions.each do |name, function|
-      mod.define_singleton_method(name) do |args|
-        function.call(args)
-      end
+      mod.define_singleton_method(name) { |args| function.call(args) }
     end
     $LOADED_FEATURES << absolute_path
     true

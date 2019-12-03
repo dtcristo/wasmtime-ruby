@@ -12,7 +12,7 @@ describe Wasmtime::Function do
 
     describe '#signature' do
       subject { function.signature }
-      it { is_expected.to eq(params: ['Integer32'], result: 'Integer32') }
+      it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
     end
 
     describe '#call' do
@@ -27,7 +27,7 @@ describe Wasmtime::Function do
 
     describe '#signature' do
       subject { function.signature }
-      it { is_expected.to eq(params: ['String'], result: 'String') }
+      it { is_expected.to eq(params: %w[String], result: 'String') }
     end
 
     describe '#call' do
@@ -58,7 +58,7 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: ['Integer32'], result: 'Integer32') }
+        it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
       xdescribe '#call' do
@@ -72,7 +72,7 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: ['Integer32'], result: 'Integer32') }
+        it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
       xdescribe '#call' do
@@ -86,7 +86,7 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: ['Integer32'], result: 'Integer32') }
+        it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
       xdescribe '#call' do
@@ -100,7 +100,7 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: ['Integer32'], result: 'Integer32') }
+        it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
       describe '#call' do
@@ -114,7 +114,7 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: ['Integer32'], result: 'Integer32') }
+        it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
       describe '#call' do
@@ -128,7 +128,7 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: ['Integer32'], result: 'Integer32') }
+        it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
       describe '#call' do
@@ -142,7 +142,7 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: ['Integer32'], result: 'Integer32') }
+        it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
       describe '#call' do
@@ -184,7 +184,7 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: ['Float32'], result: 'Float32') }
+        it { is_expected.to eq(params: %w[Float32], result: 'Float32') }
       end
 
       describe '#call' do
@@ -198,7 +198,7 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: ['Float64'], result: 'Float64') }
+        it { is_expected.to eq(params: %w[Float64], result: 'Float64') }
       end
 
       describe '#call' do
@@ -212,7 +212,11 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: %w[Integer32 Integer32], result: 'Integer32') }
+        it do
+          is_expected.to eq(
+            params: %w[Integer32 Integer32], result: 'Integer32'
+          )
+        end
       end
 
       describe '#call' do
@@ -226,7 +230,7 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: ['Integer32'], result: 'Boolean') }
+        it { is_expected.to eq(params: %w[Integer32], result: 'Boolean') }
       end
 
       xdescribe '#call' do
@@ -240,7 +244,7 @@ describe Wasmtime::Function do
 
       describe '#signature' do
         subject { function.signature }
-        it { is_expected.to eq(params: ['String'], result: 'String') }
+        it { is_expected.to eq(params: %w[String], result: 'String') }
       end
 
       describe '#call' do
