@@ -164,8 +164,7 @@ fn translate_outgoing(native_results: Vec<wit::Value>) -> AnyObject {
 
     match results.len() {
         0 => NilClass::new().into(),
-        1 => results.into_iter().next().unwrap().into(),
-        // 1 => results.first().unwrap().into(),
+        1 => results.first().unwrap().into(),
         _ => panic!("multiple return values are not supported"),
     }
 }
@@ -188,7 +187,7 @@ methods!(
 
         let result: AnyObject = match function.result_types.len() {
             0 => RubyType::NilClass.into(),
-            1 => function.result_types.iter().next().unwrap().clone().into(),
+            1 => function.result_types.first().unwrap().clone().into(),
             _ => panic!("multiple return types are not supported"),
         };
 
