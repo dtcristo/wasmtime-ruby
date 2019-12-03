@@ -2,23 +2,22 @@ use lazy_static::lazy_static;
 use rutie as r;
 use rutie::rubysys;
 use rutie::{
-    class, methods, wrappable_struct, AnyObject, Array, Hash, Module, Object, RString, Symbol,
+    class, methods, wrappable_struct, AnyObject, Array, Float, Hash, Integer, Module, NilClass,
+    Object, RString, Symbol,
 };
+use std::convert::TryInto;
 use std::mem;
 use std::rc::Rc;
 use wasm_webidl_bindings::ast;
 use wasmtime as w;
 use wasmtime_interface_types as wit;
 
-use crate::ruby_type::RubyType;
-use crate::wasm_value::WasmValue;
-
 pub struct Function {
     instance: w::HostRef<w::Instance>,
     module_data: Rc<wit::ModuleData>,
     export_name: String,
-    pub param_types: Vec<RubyType>,
-    pub result_types: Vec<RubyType>,
+    param_types: Vec<RubyType>,
+    result_types: Vec<RubyType>,
 }
 
 impl Function {
@@ -33,8 +32,8 @@ impl Function {
             .unwrap();
         let params = export_binding.param_bindings().unwrap();
         let results = export_binding.result_bindings().unwrap();
-        let param_types = decode_params(&params);
-        let result_types = decode_results(&results);
+        let param_types = parse_param_types(&params);
+        let result_types = parse_result_types(&results);
 
         Function {
             instance,
@@ -45,14 +44,10 @@ impl Function {
         }
     }
 
-    pub fn call(&mut self, args: &[WasmValue]) -> Vec<WasmValue> {
-        let args_native: Vec<wit::Value> = args.iter().map(|wv| wv.clone().into()).collect();
+    pub fn call(&mut self, args: &[wit::Value]) -> Vec<wit::Value> {
         self.module_data
-            .invoke_export(&mut self.instance, &self.export_name, &args_native)
-            .expect("unable to invoke export")
-            .into_iter()
-            .map(|v| v.into())
-            .collect()
+            .invoke_export(&mut self.instance, &self.export_name, args)
+            .expect("failed to invoke export")
     }
 
     pub fn into_ruby(self) -> RubyFunction {
@@ -62,7 +57,25 @@ impl Function {
     }
 }
 
-fn decode_params(params: &[ast::IncomingBindingExpression]) -> Vec<RubyType> {
+#[derive(Debug, Clone)]
+enum RubyType {
+    Integer32,
+    Integer64,
+    Float32,
+    Float64,
+    String,
+    Boolean,
+    NilClass,
+    Unsupported,
+}
+
+impl Into<AnyObject> for RubyType {
+    fn into(self) -> AnyObject {
+        RString::new_utf8(&format!("{:?}", self)).into()
+    }
+}
+
+fn parse_param_types(params: &[ast::IncomingBindingExpression]) -> Vec<RubyType> {
     params
         .iter()
         .map(|expr| match expr {
@@ -79,7 +92,7 @@ fn decode_params(params: &[ast::IncomingBindingExpression]) -> Vec<RubyType> {
         .collect()
 }
 
-fn decode_results(results: &[ast::OutgoingBindingExpression]) -> Vec<RubyType> {
+fn parse_result_types(results: &[ast::OutgoingBindingExpression]) -> Vec<RubyType> {
     results
         .iter()
         .map(|expr| match expr {
@@ -111,6 +124,52 @@ fn decode_results(results: &[ast::OutgoingBindingExpression]) -> Vec<RubyType> {
         .collect()
 }
 
+fn translate_incoming(args: Array, param_types: &[RubyType]) -> Vec<wit::Value> {
+    args.into_iter()
+        .zip(param_types)
+        .map(|(arg, param_type)| match param_type {
+            RubyType::Integer32 => {
+                wit::Value::I32(arg.try_convert_to::<Integer>().unwrap().to_i32())
+            }
+            RubyType::Integer64 => {
+                wit::Value::I64(arg.try_convert_to::<Integer>().unwrap().to_i64())
+            }
+            RubyType::Float32 => {
+                wit::Value::F32(arg.try_convert_to::<Float>().unwrap().to_f64() as f32)
+            }
+            RubyType::Float64 => wit::Value::F64(arg.try_convert_to::<Float>().unwrap().to_f64()),
+            RubyType::String => {
+                wit::Value::String(arg.try_convert_to::<RString>().unwrap().to_string())
+            }
+            RubyType::Boolean | RubyType::NilClass | RubyType::Unsupported => {
+                panic!("unsupported arg type")
+            }
+        })
+        .collect()
+}
+
+fn translate_outgoing(native_results: Vec<wit::Value>) -> AnyObject {
+    let results: Vec<AnyObject> = native_results
+        .into_iter()
+        .map(|r| match r {
+            wit::Value::String(v) => RString::new_utf8(&v).into(),
+            wit::Value::I32(v) => Integer::new(v.into()).into(),
+            wit::Value::U32(v) => Integer::new(v.try_into().unwrap()).into(),
+            wit::Value::I64(v) => Integer::new(v).into(),
+            wit::Value::U64(v) => Integer::new(v.try_into().unwrap()).into(),
+            wit::Value::F32(v) => Float::new(v.into()).into(),
+            wit::Value::F64(v) => Float::new(v).into(),
+        })
+        .collect();
+
+    match results.len() {
+        0 => NilClass::new().into(),
+        1 => results.into_iter().next().unwrap().into(),
+        // 1 => results.first().unwrap().into(),
+        _ => panic!("multiple return values are not supported"),
+    }
+}
+
 wrappable_struct!(Function, FunctionWrapper, FUNCTION_WRAPPER);
 class!(RubyFunction);
 
@@ -130,14 +189,7 @@ methods!(
         let result: AnyObject = match function.result_types.len() {
             0 => RubyType::NilClass.into(),
             1 => function.result_types.iter().next().unwrap().clone().into(),
-            _ => {
-                let mut results = Array::new();
-                for r in function.result_types.iter() {
-                    let object: AnyObject = r.clone().into();
-                    results.push(object);
-                }
-                results.into()
-            },
+            _ => panic!("multiple return types are not supported"),
         };
 
         let mut signature = Hash::new();
@@ -155,35 +207,23 @@ pub extern "C" fn ruby_function_call(
 ) -> AnyObject {
     // TODO: Remove this section when rutie `methods!` macro has support for variadic functions
     // https://github.com/danielpclark/rutie/blob/1c951b59e00944d305ca425267c54115c8c1bb86/README.md#variadic-functions--splat-operator
-    let raw_args = r::types::Value::from(0);
+    let args_raw = r::types::Value::from(0);
     unsafe {
         let p_argv: *const r::types::Value = mem::transmute(argv);
         rubysys::class::rb_scan_args(
             argc,
             p_argv,
             r::util::str_to_cstring("*").as_ptr(),
-            &raw_args,
+            &args_raw,
         )
     };
-    let args = Array::from(raw_args);
+    let args = Array::from(args_raw);
     // ---
     let function = itself.get_data_mut(&*FUNCTION_WRAPPER);
-    let wasm_args: Vec<WasmValue> = args.into_iter().map(|o| o.into()).collect();
 
-    let results = function.call(&wasm_args[..]);
-
-    match results.len() {
-        0 => r::NilClass::new().into(),
-        1 => results.into_iter().next().unwrap().into(),
-        _ => {
-        let mut results_array = Array::new();
-        for result in results.into_iter() {
-            let object: AnyObject = result.into();
-            results_array.push(object);
-        }
-        results_array.into()
-    }
-}
+    let args_native = translate_incoming(args, &function.param_types);
+    let results_native = function.call(&args_native[..]);
+    translate_outgoing(results_native)
 }
 
 pub fn ruby_init() {

@@ -55,12 +55,12 @@ pub fn isize_isize(x: isize) -> isize {
 
 #[wasm_bindgen]
 pub fn f32_f32(x: f32) -> f32 {
-    x + 1.0
+    x * 2.0
 }
 
 #[wasm_bindgen]
 pub fn f64_f64(x: f64) -> f64 {
-    x + 1.0
+    x * 2.0
 }
 
 #[wasm_bindgen]

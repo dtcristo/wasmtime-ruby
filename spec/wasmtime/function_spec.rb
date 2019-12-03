@@ -187,9 +187,9 @@ describe Wasmtime::Function do
         it { is_expected.to eq(params: ['Float32'], result: 'Float32') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { function.call(3.14159) }
-        it { is_expected.to eq(4.14159) }
+        it { is_expected.to be_within(0.000001).of(6.28318) }
       end
     end
 
@@ -203,7 +203,7 @@ describe Wasmtime::Function do
 
       describe '#call' do
         subject { function.call(3.14159) }
-        it { is_expected.to eq(4.14159) }
+        it { is_expected.to eq(6.28318) }
       end
     end
 
