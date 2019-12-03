@@ -5,7 +5,7 @@ require 'rspec/core/rake_task'
 
 import 'lib/tasks/build.rake'
 
-desc 'Build WASM for examples'
+desc 'Build example WASM modules'
 task :wasm do
   cd 'wasm/fibonacci/'
   sh 'cargo build --target wasm32-unknown-unknown --release'
@@ -18,6 +18,8 @@ task :wasm do
   cd '../types/'
   sh 'env WASM_INTERFACE_TYPES=1 wasm-pack build'
   cp 'pkg/types.wasm', '../'
+
+  cd '../../'
 end
 
 desc 'Format sources'
@@ -33,5 +35,5 @@ end
 
 RSpec::Core::RakeTask.new(:spec)
 
-task spec: :build
+task spec: %i[wasm build]
 task default: :spec
