@@ -1,8 +1,10 @@
 use lazy_static::lazy_static;
+use rutie as r;
+use rutie::rubysys;
 use rutie::{
-    class, methods, wrappable_struct, AnyObject, Array, Hash, Module, NilClass, Object, RString,
-    Symbol,
+    class, methods, wrappable_struct, AnyObject, Array, Hash, Module, Object, RString, Symbol,
 };
+use std::mem;
 use std::rc::Rc;
 use wasm_webidl_bindings::ast;
 use wasmtime as w;
@@ -144,25 +146,43 @@ methods!(
 
         signature
     }
-
-    fn ruby_function_call(args: Array) -> AnyObject {
-        let function = itself.get_data_mut(&*FUNCTION_WRAPPER);
-        let args: Vec<WasmValue> = args.unwrap().into_iter().map(|o| o.into()).collect();
-
-        let results = function.call(&args[..]);
-
-        if results.len() == 1 {
-            results.into_iter().next().unwrap().into()
-        } else {
-            let mut results_array = Array::new();
-            for result in results.into_iter() {
-                let object: AnyObject = result.into();
-                results_array.push(object);
-            }
-            results_array.into()
-        }
-    }
 );
+
+pub extern "C" fn ruby_function_call(
+    argc: r::types::Argc,
+    argv: *const AnyObject,
+    mut itself: AnyObject,
+) -> AnyObject {
+    // TODO: Remove this section when rutie `methods!` macro has support for variadic functions
+    // https://github.com/danielpclark/rutie/blob/1c951b59e00944d305ca425267c54115c8c1bb86/README.md#variadic-functions--splat-operator
+    let raw_args = r::types::Value::from(0);
+    unsafe {
+        let p_argv: *const r::types::Value = mem::transmute(argv);
+        rubysys::class::rb_scan_args(
+            argc,
+            p_argv,
+            r::util::str_to_cstring("*").as_ptr(),
+            &raw_args,
+        )
+    };
+    let args = Array::from(raw_args);
+    // ---
+    let function = itself.get_data_mut(&*FUNCTION_WRAPPER);
+    let wasm_args: Vec<WasmValue> = args.into_iter().map(|o| o.into()).collect();
+
+    let results = function.call(&wasm_args[..]);
+
+    if results.len() == 1 {
+        results.into_iter().next().unwrap().into()
+    } else {
+        let mut results_array = Array::new();
+        for result in results.into_iter() {
+            let object: AnyObject = result.into();
+            results_array.push(object);
+        }
+        results_array.into()
+    }
+}
 
 pub fn ruby_init() {
     Module::from_existing("Wasmtime").define(|module| {

@@ -64,6 +64,11 @@ pub fn f64_f64(x: f64) -> f64 {
 }
 
 #[wasm_bindgen]
+pub fn sum(x: i32, y: i32) -> i32 {
+    x + y
+}
+
+#[wasm_bindgen]
 pub fn bool_bool(x: bool) -> bool {
     !x
 }

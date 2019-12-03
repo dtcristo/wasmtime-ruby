@@ -16,7 +16,7 @@ describe Wasmtime::Function do
     end
 
     describe '#call' do
-      subject { function.call([11]) }
+      subject { function.call(11) }
       it { is_expected.to eq(89) }
     end
   end
@@ -31,7 +31,7 @@ describe Wasmtime::Function do
     end
 
     describe '#call' do
-      subject { function.call(['# Hello, Ruby!']) }
+      subject { function.call('# Hello, Ruby!') }
       it { is_expected.to eq("<h1>Hello, Ruby!</h1>\n") }
     end
   end
@@ -48,7 +48,7 @@ describe Wasmtime::Function do
       end
 
       xdescribe '#call' do
-        subject { function.call([]) }
+        subject { function.call() }
         it { is_expected.to be_nil }
       end
     end
@@ -62,7 +62,7 @@ describe Wasmtime::Function do
       end
 
       xdescribe '#call' do
-        subject { function.call([8]) }
+        subject { function.call(8) }
         it { is_expected.to eq(9) }
       end
     end
@@ -76,7 +76,7 @@ describe Wasmtime::Function do
       end
 
       xdescribe '#call' do
-        subject { function.call([8]) }
+        subject { function.call(8) }
         it { is_expected.to eq(9) }
       end
     end
@@ -90,7 +90,7 @@ describe Wasmtime::Function do
       end
 
       xdescribe '#call' do
-        subject { function.call([8]) }
+        subject { function.call(8) }
         it { is_expected.to eq(9) }
       end
     end
@@ -104,7 +104,7 @@ describe Wasmtime::Function do
       end
 
       describe '#call' do
-        subject { function.call([8]) }
+        subject { function.call(8) }
         it { is_expected.to eq(9) }
       end
     end
@@ -118,7 +118,7 @@ describe Wasmtime::Function do
       end
 
       describe '#call' do
-        subject { function.call([8]) }
+        subject { function.call(8) }
         it { is_expected.to eq(9) }
       end
     end
@@ -132,7 +132,7 @@ describe Wasmtime::Function do
       end
 
       describe '#call' do
-        subject { function.call([8]) }
+        subject { function.call(8) }
         it { is_expected.to eq(9) }
       end
     end
@@ -146,7 +146,7 @@ describe Wasmtime::Function do
       end
 
       describe '#call' do
-        subject { function.call([8]) }
+        subject { function.call(8) }
         it { is_expected.to eq(9) }
       end
     end
@@ -160,7 +160,7 @@ describe Wasmtime::Function do
     #   end
 
     #   describe '#call' do
-    #     subject { function.call([8]) }
+    #     subject { function.call(8) }
     #     it { is_expected.to eq(9) }
     #   end
     # end
@@ -174,7 +174,7 @@ describe Wasmtime::Function do
     #   end
 
     #   describe '#call' do
-    #     subject { function.call([8]) }
+    #     subject { function.call(8) }
     #     it { is_expected.to eq(9) }
     #   end
     # end
@@ -188,7 +188,7 @@ describe Wasmtime::Function do
       end
 
       xdescribe '#call' do
-        subject { function.call([3.14159]) }
+        subject { function.call(3.14159) }
         it { is_expected.to eq(4.14159) }
       end
     end
@@ -201,9 +201,23 @@ describe Wasmtime::Function do
         it { is_expected.to eq(params: ['Float64'], result: 'Float64') }
       end
 
-      xdescribe '#call' do
-        subject { function.call([3.14159]) }
+      describe '#call' do
+        subject { function.call(3.14159) }
         it { is_expected.to eq(4.14159) }
+      end
+    end
+
+    context 'sum export' do
+      let(:export) { :sum }
+
+      describe '#signature' do
+        subject { function.signature }
+        it { is_expected.to eq(params: %w[Integer32 Integer32], result: 'Integer32') }
+      end
+
+      describe '#call' do
+        subject { function.call(40, 2) }
+        it { is_expected.to eq(42) }
       end
     end
 
@@ -216,7 +230,7 @@ describe Wasmtime::Function do
       end
 
       xdescribe '#call' do
-        subject { function.call([true]) }
+        subject { function.call(true) }
         it { is_expected.to be(false) }
       end
     end
@@ -230,7 +244,7 @@ describe Wasmtime::Function do
       end
 
       describe '#call' do
-        subject { function.call(['Ruby']) }
+        subject { function.call('Ruby') }
         it { is_expected.to eq('Hello, Ruby!') }
       end
     end
