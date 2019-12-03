@@ -5,13 +5,13 @@ numbers.
 
 ## Usage
 
-Compile Rust to WebAssembly.
+Build WASM modules for examples.
 
 ```sh
-cargo build --target wasm32-unknown-unknown --release
+rake wasm
 ```
 
-Install Ruby dependencies.
+Install dependencies.
 
 ```sh
 bundle install

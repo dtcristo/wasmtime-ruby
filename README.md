@@ -16,8 +16,8 @@ Install the `wasmtime` gem.
 gem install wasmtime
 ```
 
-Given a you have WASM module in your current directory, such as `markdown.wasm`
-from the [examples](https://github.com/dtcristo/wasmtime-ruby/tree/master/examples/markdown).
+Given a you have WASM module in your current directory, such as the example
+`markdown.wasm` built from [here](https://github.com/dtcristo/wasmtime-ruby/tree/master/wasm/markdown).
 
 First `require 'wasmtime'` to activate the Wasmtime require patch, allowing you
 to require any `*.wasm` module as if it were a Ruby file. Doing so will

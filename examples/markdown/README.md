@@ -5,6 +5,12 @@ Markdown renderer, demonstrating support for
 
 ## Usage
 
+Build WASM modules for examples.
+
+```sh
+rake wasm
+```
+
 Install dependencies.
 
 ```sh
