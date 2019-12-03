@@ -13,5 +13,5 @@ lazy_static = "1.4.0"
 rutie = "0.7.0"
 walrus = "0.13"
 wasm-webidl-bindings = "0.6"
-wasmtime = "0.8.0"
-wasmtime-interface-types = "0.8.0"
+wasmtime = { git = "https://github.com/dtcristo/wasmtime", branch = "unrestricted-float" }
+wasmtime-interface-types = { git = "https://github.com/dtcristo/wasmtime", branch = "unrestricted-float" }
