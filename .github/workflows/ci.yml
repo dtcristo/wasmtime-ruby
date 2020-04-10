@@ -1,5 +1,5 @@
 name: CI
-on: [push]
+on: push
 jobs:
   build:
     name: Build and test on ${{ matrix.os }}
