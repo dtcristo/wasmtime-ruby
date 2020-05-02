@@ -3,6 +3,7 @@ use rutie::{class, methods, wrappable_struct, Hash, Module, Object, RString, Sym
 use std::collections::HashMap;
 use std::fs;
 use std::rc::Rc;
+use wasm_webidl_bindings as wwb;
 use wasmtime as w;
 use wasmtime_interface_types as wit;
 
@@ -10,20 +11,31 @@ use crate::function::Function;
 use crate::memory::Memory;
 
 pub struct Instance {
-    instance: w::HostRef<w::Instance>,
+    instance: Rc<w::Instance>,
     module_data: Rc<wit::ModuleData>,
 }
 
 impl Instance {
     pub fn new(path: String) -> Self {
-        let wasm = fs::read(path).unwrap();
+        let wasm = fs::read(path.clone()).unwrap();
+        // let mut config = walrus::ModuleConfig::default();
+        // config.on_parse(move |module, indices_to_ids| {
+        //     let wasm2 = fs::read(path.clone()).unwrap();
+        //     let webidl_bindings = wwb::binary::decode(indices_to_ids, &wasm2)?;
+        //     println!("The parsed Web IDL bindings are {:#?}", webidl_bindings);
+        //     // Insert the `webidl_bindings` into the module as a custom section.
+        //     module.customs.add(webidl_bindings);
+        //     Ok(())
+        // });
+        // config.parse(&wasm).unwrap();
 
-        let config = w::Config::new();
-        let engine = w::HostRef::new(w::Engine::new(&config));
-        let store = w::HostRef::new(w::Store::new(&engine));
-        let module = w::HostRef::new(w::Module::new(&store, &wasm).unwrap());
+        // let config = w::Config::new();
+        // let engine = w::Engine::new(&config);
+        // let store = w::Store::new(&engine);
+        let store = w::Store::default();
+        let module = w::Module::new(&store, &wasm).unwrap();
         let imports: Vec<w::Extern> = Vec::new();
-        let instance = w::HostRef::new(w::Instance::new(&store, &module, &imports).unwrap());
+        let instance = Rc::new(w::Instance::new(&module, &imports).unwrap());
 
         let module_data = Rc::new(wit::ModuleData::new(&wasm).unwrap());
 
@@ -37,9 +49,9 @@ impl Instance {
         let mut functions = HashMap::new();
         let mut memories = HashMap::new();
 
-        for export in self.instance.borrow().module().borrow().exports().iter() {
-            match export.r#type() {
-                w::ExternType::ExternFunc(_) => {
+        for export in self.instance.module().exports().iter() {
+            match export.ty() {
+                w::ExternType::Func(_) => {
                     let function = Function::new(
                         self.instance.clone(),
                         self.module_data.clone(),
@@ -47,7 +59,7 @@ impl Instance {
                     );
                     functions.insert(export.name().to_string(), function);
                 }
-                w::ExternType::ExternMemory(_) => {
+                w::ExternType::Memory(_) => {
                     let memory = Memory::new();
                     memories.insert(export.name().to_string(), memory);
                 }

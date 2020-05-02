@@ -61,7 +61,7 @@ describe Wasmtime::Function do
         it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { function.call(8) }
         it { is_expected.to eq(9) }
       end

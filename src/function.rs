@@ -8,12 +8,12 @@ use rutie::{
 use std::convert::TryInto;
 use std::mem;
 use std::rc::Rc;
-use wasm_webidl_bindings::ast;
+use wasm_webidl_bindings as wwb;
 use wasmtime as w;
 use wasmtime_interface_types as wit;
 
 pub struct Function {
-    instance: w::HostRef<w::Instance>,
+    instance: Rc<w::Instance>,
     module_data: Rc<wit::ModuleData>,
     export_name: String,
     param_types: Vec<RubyType>,
@@ -22,18 +22,20 @@ pub struct Function {
 
 impl Function {
     pub fn new(
-        instance: w::HostRef<w::Instance>,
+        instance: Rc<w::Instance>,
         module_data: Rc<wit::ModuleData>,
         export_name: String,
     ) -> Self {
-        let mut handle = instance.borrow().handle().clone();
-        let export_binding = module_data
-            .binding_for_export(&mut handle, &export_name)
-            .unwrap();
-        let params = export_binding.param_bindings().unwrap();
-        let results = export_binding.result_bindings().unwrap();
-        let param_types = parse_param_types(&params);
-        let result_type = parse_result_type(&results);
+        // let handle = instance.handle();
+        // let export_binding = module_data
+        //     .binding_for_export(handle, &export_name)
+        //     .unwrap();
+        // let params = export_binding.param_bindings().unwrap();
+        // let results = export_binding.result_bindings().unwrap();
+        let params: Vec<wwb::ast::IncomingBindingExpression> = Vec::new();
+        let results: Vec<wwb::ast::OutgoingBindingExpression> = Vec::new();
+        let param_types = parse_param_types(params);
+        let result_type = parse_result_type(results);
 
         Function {
             instance,
@@ -75,50 +77,49 @@ impl Into<AnyObject> for RubyType {
     }
 }
 
-fn parse_param_types(params: &[ast::IncomingBindingExpression]) -> Vec<RubyType> {
+fn parse_param_types(params: Vec<wwb::ast::IncomingBindingExpression>) -> Vec<RubyType> {
     params
         .iter()
         .map(|expr| match expr {
-            ast::IncomingBindingExpression::As(e) => match e.ty {
+            wwb::ast::IncomingBindingExpression::As(e) => match e.ty {
                 walrus::ValType::I32 => RubyType::Integer32,
                 walrus::ValType::I64 => RubyType::Integer64,
                 walrus::ValType::F32 => RubyType::Float32,
                 walrus::ValType::F64 => RubyType::Float64,
                 walrus::ValType::V128 | walrus::ValType::Anyref => RubyType::Unsupported,
             },
-            ast::IncomingBindingExpression::AllocUtf8Str(_) => RubyType::String,
+            wwb::ast::IncomingBindingExpression::AllocUtf8Str(_) => RubyType::String,
             _ => RubyType::Unsupported,
         })
         .collect()
 }
 
-fn parse_result_type(results: &[ast::OutgoingBindingExpression]) -> RubyType {
+fn parse_result_type(results: Vec<wwb::ast::OutgoingBindingExpression>) -> RubyType {
     match results.len() {
         0 => RubyType::NilClass,
         1 => {
             let expr = results.first().unwrap();
             match expr {
-                ast::OutgoingBindingExpression::As(e) => match e.ty {
-                    ast::WebidlTypeRef::Scalar(s) => match s {
-                        ast::WebidlScalarType::Byte
-                        | ast::WebidlScalarType::Octet
-                        | ast::WebidlScalarType::Short
-                        | ast::WebidlScalarType::UnsignedShort
-                        | ast::WebidlScalarType::Long
-                        | ast::WebidlScalarType::UnsignedLong => RubyType::Integer32,
-                        ast::WebidlScalarType::LongLong
-                        | ast::WebidlScalarType::UnsignedLongLong => RubyType::Integer64,
-                        ast::WebidlScalarType::Float | ast::WebidlScalarType::UnrestrictedFloat => {
-                            RubyType::Float32
-                        }
-                        ast::WebidlScalarType::Double
-                        | ast::WebidlScalarType::UnrestrictedDouble => RubyType::Float64,
-                        ast::WebidlScalarType::Boolean => RubyType::Boolean,
+                wwb::ast::OutgoingBindingExpression::As(e) => match e.ty {
+                    wwb::ast::WebidlTypeRef::Scalar(s) => match s {
+                        wwb::ast::WebidlScalarType::Byte
+                        | wwb::ast::WebidlScalarType::Octet
+                        | wwb::ast::WebidlScalarType::Short
+                        | wwb::ast::WebidlScalarType::UnsignedShort
+                        | wwb::ast::WebidlScalarType::Long
+                        | wwb::ast::WebidlScalarType::UnsignedLong => RubyType::Integer32,
+                        wwb::ast::WebidlScalarType::LongLong
+                        | wwb::ast::WebidlScalarType::UnsignedLongLong => RubyType::Integer64,
+                        wwb::ast::WebidlScalarType::Float
+                        | wwb::ast::WebidlScalarType::UnrestrictedFloat => RubyType::Float32,
+                        wwb::ast::WebidlScalarType::Double
+                        | wwb::ast::WebidlScalarType::UnrestrictedDouble => RubyType::Float64,
+                        wwb::ast::WebidlScalarType::Boolean => RubyType::Boolean,
                         _ => panic!("failed to decode results, unsupported type: ({:?})", s),
                     },
                     _ => panic!("failed to decode results, unsupported type: {:?}", e.ty),
                 },
-                ast::OutgoingBindingExpression::Utf8Str(_) => RubyType::String,
+                wwb::ast::OutgoingBindingExpression::Utf8Str(_) => RubyType::String,
                 _ => panic!("failed to decode results, unsupported type: {:?}", expr),
             }
         }

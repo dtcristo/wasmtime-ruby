@@ -68,10 +68,10 @@ pub fn sum(x: i32, y: i32) -> i32 {
     x + y
 }
 
-#[wasm_bindgen]
-pub fn bool_bool(x: bool) -> bool {
-    !x
-}
+// #[wasm_bindgen]
+// pub fn bool_bool(x: bool) -> bool {
+//     !x
+// }
 
 #[wasm_bindgen]
 pub fn str_string(x: &str) -> String {
