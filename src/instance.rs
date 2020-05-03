@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::fs;
 use wasmtime as w;
 
-use crate::function::Function;
+use crate::func::Func;
 use crate::memory::Memory;
 
 pub struct Instance {
@@ -27,16 +27,16 @@ impl Instance {
         Instance { instance }
     }
 
-    fn exports(&self) -> (HashMap<String, Function>, HashMap<String, Memory>) {
-        let mut functions = HashMap::new();
+    fn exports(&self) -> (HashMap<String, Func>, HashMap<String, Memory>) {
+        let mut funcs = HashMap::new();
         let mut memories = HashMap::new();
 
         for export in self.instance.exports() {
             match export.ty() {
                 w::ExternType::Func(_) => {
                     let name = export.name().to_string();
-                    let function = Function::new(export.into_func().unwrap());
-                    functions.insert(name, function);
+                    let func = Func::new(export.into_func().unwrap());
+                    funcs.insert(name, func);
                 }
                 w::ExternType::Memory(_) => {
                     let memory = Memory::new();
@@ -46,10 +46,10 @@ impl Instance {
             }
         }
 
-        (functions, memories)
+        (funcs, memories)
     }
 
-    pub fn functions(&self) -> HashMap<String, Function> {
+    pub fn funcs(&self) -> HashMap<String, Func> {
         let (functions, _) = self.exports();
         functions
     }
@@ -73,12 +73,12 @@ methods!(
         Instance::new(path.unwrap().to_string()).into_ruby()
     }
 
-    fn ruby_instance_functions() -> Hash {
-        let mut functions = Hash::new();
-        for (export_name, function) in itself.get_data(&*INSTANCE_WRAPPER).functions().into_iter() {
-            functions.store(Symbol::new(&export_name), function.into_ruby());
+    fn ruby_instance_funcs() -> Hash {
+        let mut funcs = Hash::new();
+        for (export_name, function) in itself.get_data(&*INSTANCE_WRAPPER).funcs().into_iter() {
+            funcs.store(Symbol::new(&export_name), function.into_ruby());
         }
-        functions
+        funcs
     }
 );
 
@@ -88,7 +88,7 @@ pub fn ruby_init() {
             .define_nested_class("Instance", None)
             .define(|class| {
                 class.def_self("new", ruby_instance_new);
-                class.def("functions", ruby_instance_functions);
+                class.def("funcs", ruby_instance_funcs);
             });
     });
 }

@@ -8,23 +8,23 @@ use rutie::{
 use std::mem;
 use wasmtime as w;
 
-pub struct Function {
+pub struct Func {
     func: w::Func,
 }
 
-impl Function {
+impl Func {
     pub fn new(func: w::Func) -> Self {
-        Function { func }
+        Func { func }
     }
 
     pub fn call(&mut self, args: &[w::Val]) -> Vec<w::Val> {
         self.func.call(args).unwrap().to_vec()
     }
 
-    pub fn into_ruby(self) -> RubyFunction {
+    pub fn into_ruby(self) -> RubyFunc {
         Module::from_existing("Wasmtime")
-            .get_nested_class("Function")
-            .wrap_data(self, &*FUNCTION_WRAPPER)
+            .get_nested_class("Func")
+            .wrap_data(self, &*FUNC_WRAPPER)
     }
 
     fn parse_param_types(&self) -> Vec<RubyType> {
@@ -114,23 +114,23 @@ fn translate_outgoing(native_results: Vec<w::Val>) -> AnyObject {
     }
 }
 
-wrappable_struct!(Function, FunctionWrapper, FUNCTION_WRAPPER);
-class!(RubyFunction);
+wrappable_struct!(Func, FuncWrapper, FUNC_WRAPPER);
+class!(RubyFunc);
 
 #[rustfmt::skip]
 methods!(
-    RubyFunction,
+    RubyFunc,
     itself,
 
-    fn ruby_function_signature() -> Hash {
-        let function = itself.get_data(&*FUNCTION_WRAPPER);
+    fn ruby_func_signature() -> Hash {
+        let func = itself.get_data(&*FUNC_WRAPPER);
 
         let mut param_types = Array::new();
-        for param_type in function.parse_param_types().iter() {
+        for param_type in func.parse_param_types().iter() {
             param_types.push(RString::new_utf8(&format!("{:?}", param_type)));
         }
 
-        let result_type: AnyObject = function.parse_result_type().into();
+        let result_type: AnyObject = func.parse_result_type().into();
 
         let mut signature = Hash::new();
         signature.store(Symbol::new("params"), param_types);
@@ -140,7 +140,7 @@ methods!(
     }
 );
 
-pub extern "C" fn ruby_function_call(
+pub extern "C" fn ruby_func_call(
     argc: r::types::Argc,
     argv: *const AnyObject,
     mut itself: AnyObject,
@@ -159,20 +159,18 @@ pub extern "C" fn ruby_function_call(
     };
     let args = Array::from(args_raw);
     // ---
-    let function = itself.get_data_mut(&*FUNCTION_WRAPPER);
+    let func = itself.get_data_mut(&*FUNC_WRAPPER);
 
-    let args_native = translate_incoming(args, &function.parse_param_types());
-    let results_native = function.call(&args_native[..]);
+    let args_native = translate_incoming(args, &func.parse_param_types());
+    let results_native = func.call(&args_native[..]);
     translate_outgoing(results_native)
 }
 
 pub fn ruby_init() {
     Module::from_existing("Wasmtime").define(|module| {
-        module
-            .define_nested_class("Function", None)
-            .define(|class| {
-                class.def("signature", ruby_function_signature);
-                class.def("call", ruby_function_call);
-            });
+        module.define_nested_class("Func", None).define(|class| {
+            class.def("signature", ruby_func_signature);
+            class.def("call", ruby_func_call);
+        });
     });
 }
