@@ -3,7 +3,7 @@
 require 'wasmtime'
 
 describe Wasmtime do
-  describe 'require' do
+  xdescribe 'require' do
     it 'should load markdown module' do
       expect(require_relative('../../wasm/markdown')).to be_truthy
       markdown_lib = File.expand_path('../../wasm', __dir__)

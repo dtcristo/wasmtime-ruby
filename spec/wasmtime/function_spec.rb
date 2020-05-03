@@ -21,7 +21,7 @@ describe Wasmtime::Function do
     end
   end
 
-  context 'with markdown module render export' do
+  xcontext 'with markdown module render export' do
     let(:module_path) { 'wasm/markdown.wasm' }
     let(:export) { :render }
 
@@ -36,7 +36,7 @@ describe Wasmtime::Function do
     end
   end
 
-  context 'with types module' do
+  xcontext 'with types module' do
     let(:module_path) { 'wasm/types.wasm' }
 
     context 'void export' do

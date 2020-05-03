@@ -11,9 +11,4 @@ crate-type = ["cdylib"]
 [dependencies]
 lazy_static = "1.4.0"
 rutie = "0.7.0"
-walrus = "0.15.0"
-wasm-webidl-bindings = "0.8.0"
 wasmtime = "0.16.0"
-wasmtime-interface-types = "0.12.0"
-# wasmtime = { git = "https://github.com/dtcristo/wasmtime", branch = "unrestricted-float" }
-# wasmtime-interface-types = { git = "https://github.com/dtcristo/wasmtime", branch = "unrestricted-float" }
