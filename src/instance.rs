@@ -13,16 +13,16 @@ pub struct Instance {
 
 impl Instance {
     pub fn new(path: String) -> Self {
-        let wasm = fs::read(path).unwrap();
+        let wasm = fs::read(path).expect("failed to read wasm file");
 
         let config = w::Config::new();
         // config.wasm_interface_types(true);
 
         let engine = w::Engine::new(&config);
         let store = w::Store::new(&engine);
-        let module = w::Module::new(&store, &wasm).unwrap();
+        let module = w::Module::new(&store, &wasm).expect("failed to create module");
         let imports: Vec<w::Extern> = Vec::new();
-        let instance = w::Instance::new(&module, &imports).unwrap();
+        let instance = w::Instance::new(&module, &imports).expect("failed to create instance");
 
         Instance { instance }
     }
@@ -35,7 +35,7 @@ impl Instance {
             match export.ty() {
                 w::ExternType::Func(_) => {
                     let name = export.name().to_string();
-                    let func = Func::new(export.into_func().unwrap());
+                    let func = Func::new(export.into_func().expect("failed to create func"));
                     funcs.insert(name, func);
                 }
                 w::ExternType::Memory(_) => {
@@ -70,7 +70,7 @@ methods!(
     itself,
 
     fn ruby_instance_new(path: RString) -> RubyInstance {
-        Instance::new(path.unwrap().to_string()).into_ruby()
+        Instance::new(path.expect("failed read path").to_string()).into_ruby()
     }
 
     fn ruby_instance_funcs() -> Hash {

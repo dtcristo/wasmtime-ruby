@@ -8,6 +8,8 @@ use rutie::{
 use std::mem;
 use wasmtime as w;
 
+use crate::vm::*;
+
 pub struct Func {
     func: w::Func,
 }
@@ -18,7 +20,7 @@ impl Func {
     }
 
     pub fn call(&mut self, args: &[w::Val]) -> Vec<w::Val> {
-        self.func.call(args).unwrap().to_vec()
+        self.func.call(args).expect("failed to call func").to_vec()
     }
 
     pub fn into_ruby(self) -> RubyFunc {
@@ -40,7 +42,7 @@ impl Func {
         match self.func.ty().results().len() {
             0 => RubyType::NilClass,
             1 => val_type_to_ruby_type(self.func.ty().results().first().unwrap()),
-            _ => panic!("multiple return values are not supported"),
+            _ => raise("StandardError", "multiple return values are not supported"),
         }
     }
 }
@@ -75,21 +77,43 @@ impl Into<AnyObject> for RubyType {
 
 fn translate_incoming(args: Array, param_types: &[RubyType]) -> Vec<w::Val> {
     if args.length() != param_types.len() {
-        panic!("incorrect arity");
+        raise(
+            "ArgumentError",
+            &format!(
+                "wrong number of arguments (given {}, expected {})",
+                args.length(),
+                param_types.len()
+            ),
+        )
     }
     args.into_iter()
         .zip(param_types)
         .map(|(arg, param_type)| match param_type {
-            RubyType::Integer32 => w::Val::I32(arg.try_convert_to::<Integer>().unwrap().to_i32()),
-            RubyType::Integer64 => w::Val::I64(arg.try_convert_to::<Integer>().unwrap().to_i64()),
-            RubyType::Float32 => {
-                w::Val::F32(arg.try_convert_to::<Float>().unwrap().to_f64() as u32)
-            }
-            RubyType::Float64 => {
-                w::Val::F64(arg.try_convert_to::<Float>().unwrap().to_f64() as u64)
-            }
+            RubyType::Integer32 => w::Val::I32(
+                arg.try_convert_to::<Integer>()
+                    .expect("failed to convert integer")
+                    .to_i32(),
+            ),
+            RubyType::Integer64 => w::Val::I64(
+                arg.try_convert_to::<Integer>()
+                    .expect("failed to convert integer")
+                    .to_i64(),
+            ),
+            RubyType::Float32 => w::Val::F32(
+                arg.try_convert_to::<Float>()
+                    .expect("failed to convert float")
+                    .to_f64() as u32,
+            ),
+            RubyType::Float64 => w::Val::F64(
+                arg.try_convert_to::<Float>()
+                    .expect("failed to convert float")
+                    .to_f64() as u64,
+            ),
             RubyType::String | RubyType::Boolean | RubyType::NilClass | RubyType::Unsupported => {
-                panic!("unsupported arg type: {:?}", param_type)
+                raise(
+                    "StandardError",
+                    &format!("unsupported arg type: {:?}", param_type),
+                )
             }
         })
         .collect()
@@ -103,14 +127,14 @@ fn translate_outgoing(native_results: Vec<w::Val>) -> AnyObject {
             w::Val::I64(v) => Integer::new(v).into(),
             w::Val::F32(v) => Float::new(v.into()).into(),
             w::Val::F64(v) => Float::new(f64::from_bits(v)).into(),
-            _ => panic!("unsupported value: {:?}", r),
+            _ => raise("StandardError", &format!("unsupported value: {:?}", r)),
         })
         .collect();
 
     match results.len() {
         0 => NilClass::new().into(),
         1 => results.first().unwrap().into(),
-        _ => panic!("multiple return values are not supported"),
+        _ => raise("StandardError", "multiple return values are not supported"),
     }
 }
 
