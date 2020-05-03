@@ -44,7 +44,7 @@ describe Wasmtime::Func do
     end
   end
 
-  xcontext 'with types module' do
+  context 'with types module' do
     let(:module_path) { 'wasm/types.wasm' }
 
     context 'void export' do
@@ -55,13 +55,13 @@ describe Wasmtime::Func do
         it { is_expected.to eq(params: [], result: 'NilClass') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { func.call }
         it { is_expected.to be_nil }
       end
     end
 
-    xcontext 'u8_u8 export' do
+    context 'u8_u8 export' do
       let(:export) { :u8_u8 }
 
       describe '#signature' do
@@ -69,13 +69,13 @@ describe Wasmtime::Func do
         it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { func.call(8) }
         it { is_expected.to eq(9) }
       end
     end
 
-    xcontext 'i8_i8 export' do
+    context 'i8_i8 export' do
       let(:export) { :i8_i8 }
 
       describe '#signature' do
@@ -83,13 +83,13 @@ describe Wasmtime::Func do
         it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { func.call(8) }
         it { is_expected.to eq(9) }
       end
     end
 
-    xcontext 'u16_u16 export' do
+    context 'u16_u16 export' do
       let(:export) { :u16_u16 }
 
       describe '#signature' do
@@ -97,13 +97,13 @@ describe Wasmtime::Func do
         it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { func.call(8) }
         it { is_expected.to eq(9) }
       end
     end
 
-    xcontext 'u32_u32 export' do
+    context 'u32_u32 export' do
       let(:export) { :u32_u32 }
 
       describe '#signature' do
@@ -111,13 +111,13 @@ describe Wasmtime::Func do
         it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { func.call(8) }
         it { is_expected.to eq(9) }
       end
     end
 
-    xcontext 'i32_i32 export' do
+    context 'i32_i32 export' do
       let(:export) { :i32_i32 }
 
       describe '#signature' do
@@ -125,13 +125,13 @@ describe Wasmtime::Func do
         it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { func.call(8) }
         it { is_expected.to eq(9) }
       end
     end
 
-    xcontext 'usize_usize export' do
+    context 'usize_usize export' do
       let(:export) { :usize_usize }
 
       describe '#signature' do
@@ -139,13 +139,13 @@ describe Wasmtime::Func do
         it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { func.call(8) }
         it { is_expected.to eq(9) }
       end
     end
 
-    xcontext 'isize_isize export' do
+    context 'isize_isize export' do
       let(:export) { :isize_isize }
 
       describe '#signature' do
@@ -153,7 +153,7 @@ describe Wasmtime::Func do
         it { is_expected.to eq(params: %w[Integer32], result: 'Integer32') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { func.call(8) }
         it { is_expected.to eq(9) }
       end
@@ -164,7 +164,7 @@ describe Wasmtime::Func do
 
     #   describe '#signature' do
     #     subject { func.signature }
-    #     it { is_expected.to eq(params: ['Integer64'], result: 'Integer64') }
+    #     it { is_expected.to eq(params: %w[Integer64], result: 'Integer64') }
     #   end
 
     #   describe '#call' do
@@ -178,7 +178,7 @@ describe Wasmtime::Func do
 
     #   describe '#signature' do
     #     subject { func.signature }
-    #     it { is_expected.to eq(params: ['Integer64'], result: 'Integer64') }
+    #     it { is_expected.to eq(params: %w[Integer64], result: 'Integer64') }
     #   end
 
     #   describe '#call' do
@@ -187,7 +187,7 @@ describe Wasmtime::Func do
     #   end
     # end
 
-    xcontext 'f32_f32 export' do
+    context 'f32_f32 export' do
       let(:export) { :f32_f32 }
 
       describe '#signature' do
@@ -195,13 +195,13 @@ describe Wasmtime::Func do
         it { is_expected.to eq(params: %w[Float32], result: 'Float32') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { func.call(3.14159) }
-        it { is_expected.to be_within(0.000001).of(6.28318) }
+        it { is_expected.to eq(6.28318) }
       end
     end
 
-    xcontext 'f64_f64 export' do
+    context 'f64_f64 export' do
       let(:export) { :f64_f64 }
 
       describe '#signature' do
@@ -209,13 +209,13 @@ describe Wasmtime::Func do
         it { is_expected.to eq(params: %w[Float64], result: 'Float64') }
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { func.call(3.14159) }
         it { is_expected.to eq(6.28318) }
       end
     end
 
-    xcontext 'sum export' do
+    context 'sum export' do
       let(:export) { :sum }
 
       describe '#signature' do
@@ -227,38 +227,38 @@ describe Wasmtime::Func do
         end
       end
 
-      xdescribe '#call' do
+      describe '#call' do
         subject { func.call(40, 2) }
         it { is_expected.to eq(42) }
       end
     end
 
-    xcontext 'bool_bool export' do
-      let(:export) { :bool_bool }
+    # context 'bool_bool export' do
+    #   let(:export) { :bool_bool }
 
-      describe '#signature' do
-        subject { func.signature }
-        it { is_expected.to eq(params: %w[Integer32], result: 'Boolean') }
-      end
+    #   describe '#signature' do
+    #     subject { func.signature }
+    #     it { is_expected.to eq(params: %w[Boolean], result: 'Boolean') }
+    #   end
 
-      xdescribe '#call' do
-        subject { func.call(true) }
-        it { is_expected.to be(false) }
-      end
-    end
+    #   describe '#call' do
+    #     subject { func.call(true) }
+    #     it { is_expected.to be(false) }
+    #   end
+    # end
 
-    xcontext 'str_string export' do
-      let(:export) { :str_string }
+    # context 'str_string export' do
+    #   let(:export) { :str_string }
 
-      describe '#signature' do
-        subject { func.signature }
-        it { is_expected.to eq(params: %w[String], result: 'String') }
-      end
+    #   describe '#signature' do
+    #     subject { func.signature }
+    #     it { is_expected.to eq(params: %w[String], result: 'String') }
+    #   end
 
-      describe '#call' do
-        subject { func.call('Ruby') }
-        it { is_expected.to eq('Hello, Ruby!') }
-      end
-    end
+    #   describe '#call' do
+    #     subject { func.call('Ruby') }
+    #     it { is_expected.to eq('Hello, Ruby!') }
+    #   end
+    # end
   end
 end

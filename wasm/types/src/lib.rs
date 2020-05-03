@@ -43,13 +43,23 @@ pub fn isize_isize(x: isize) -> isize {
     x + 1
 }
 
+#[wasm_bindgen]
+pub fn u64_u64(x: u64) -> u64 {
+    x + 1
+}
+
+#[wasm_bindgen]
+pub fn i64_i64(x: i64) -> i64 {
+    x + 1
+}
+
 // #[wasm_bindgen]
-// pub fn u64_u64(x: u64) -> u64 {
+// pub fn u128_u128(x: u128) -> u128 {
 //     x + 1
 // }
 
 // #[wasm_bindgen]
-// pub fn i64_i64(x: i64) -> i64 {
+// pub fn i128_i128(x: i128) -> i128 {
 //     x + 1
 // }
 
@@ -64,16 +74,16 @@ pub fn f64_f64(x: f64) -> f64 {
 }
 
 #[wasm_bindgen]
-pub fn sum(x: i32, y: i32) -> i32 {
-    x + y
+pub fn bool_bool(x: bool) -> bool {
+    !x
 }
-
-// #[wasm_bindgen]
-// pub fn bool_bool(x: bool) -> bool {
-//     !x
-// }
 
 #[wasm_bindgen]
 pub fn str_string(x: &str) -> String {
     format!("Hello, {}!", x)
+}
+
+#[wasm_bindgen]
+pub fn sum(x: i32, y: i32) -> i32 {
+    x + y
 }
