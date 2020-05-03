@@ -75,8 +75,8 @@ methods!(
 
     fn ruby_instance_funcs() -> Hash {
         let mut funcs = Hash::new();
-        for (export_name, function) in itself.get_data(&*INSTANCE_WRAPPER).funcs().into_iter() {
-            funcs.store(Symbol::new(&export_name), function.into_ruby());
+        for (export_name, func) in itself.get_data(&*INSTANCE_WRAPPER).funcs().into_iter() {
+            funcs.store(Symbol::new(&export_name), func.into_ruby());
         }
         funcs
     }
