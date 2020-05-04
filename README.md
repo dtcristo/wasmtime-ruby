@@ -93,4 +93,5 @@ rake format
 
 - Add support for raw memory access and other types of exports
 - Add support for imports
+- Implement more of the Wasmtime API
 - Add support for WASM Interface Types when they are supported in Wasmtime
