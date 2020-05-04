@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = 'Wasmtime WebAssembly runtime integration'
   spec.homepage = 'https://github.com/dtcristo/wasmtime-ruby'
-  spec.license = 'MIT'
+  spec.license = 'Apache-2.0 WITH LLVM-exception'
 
   spec.files = Dir['{lib,ext,src}/**/*', 'Cargo.*', 'LICENSE', 'README.md']
   spec.require_paths = %w[lib]
