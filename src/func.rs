@@ -100,14 +100,14 @@ fn translate_incoming(args: Array, param_types: &[RubyType]) -> Vec<w::Val> {
                     .to_i64(),
             ),
             RubyType::Float32 => w::Val::F32(
-                arg.try_convert_to::<Float>()
+                (arg.try_convert_to::<Float>()
                     .expect("failed to convert float")
-                    .to_f64() as u32,
+                    .to_f64() as f32).to_bits(),
             ),
             RubyType::Float64 => w::Val::F64(
                 arg.try_convert_to::<Float>()
                     .expect("failed to convert float")
-                    .to_f64() as u64,
+                    .to_f64().to_bits(),
             ),
             RubyType::String | RubyType::Boolean | RubyType::NilClass | RubyType::Unsupported => {
                 raise(
@@ -125,7 +125,7 @@ fn translate_outgoing(native_results: Vec<w::Val>) -> AnyObject {
         .map(|r| match r {
             w::Val::I32(v) => Integer::new(v.into()).into(),
             w::Val::I64(v) => Integer::new(v).into(),
-            w::Val::F32(v) => Float::new(v.into()).into(),
+            w::Val::F32(v) => Float::new(f32::from_bits(v).into()).into(),
             w::Val::F64(v) => Float::new(f64::from_bits(v)).into(),
             _ => raise("StandardError", &format!("unsupported value: {:?}", r)),
         })

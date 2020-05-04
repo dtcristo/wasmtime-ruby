@@ -164,7 +164,15 @@ describe Wasmtime::Func do
       let(:args) { [3.14159] }
       let(:expected_result) { 6.28318 }
 
-      include_examples '#signature and #call'
+      describe '#signature' do
+        subject { func.signature }
+        it { is_expected.to eq(expected_signature) }
+      end
+
+      describe '#call' do
+        subject { func.call(*args) }
+        it { is_expected.to be_within(0.000001).of(expected_result) }
+      end
     end
 
     context 'f64_f64 export' do
