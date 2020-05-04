@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'wasmtime'
+
 using Wasmtime::Refinements
 
 module Kernel
