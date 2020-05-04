@@ -14,10 +14,10 @@ This project allows you to use the [Wasmtime](https://wasmtime.dev/) WebAssembly
 runtime from within your Ruby project.
 
 Why would you want that? [WebAssembly](https://webassembly.org/) (or WASM) is a
-technology that allows you to write a program in a fast and safe way. Wasmtime
-is a runtime that allows you to execute WASM programs. This gem embeds Wasmtime
-within a native extention so you can execute a WASM program from Ruby. Programs
-written in WASM will run at near-native speeds in a safe sandboxed environment.
+technology that allows you to write programs that run at near-native speeds in a
+safe sandboxed environment. Wasmtime is a runtime that allows you to execute
+WASM programs. This gem embeds Wasmtime within a native extension so you can
+execute a WASM program from Ruby.
 
 This project is pretty experimental and not production ready right now. There
 are quite a few things that aren't built yet, see [TODO](#todo) section below.
