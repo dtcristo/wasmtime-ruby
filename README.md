@@ -8,6 +8,25 @@
   </p>
 </div>
 
+## Introduction
+
+This project allows you to use the [Wasmtime](https://wasmtime.dev/) WebAssembly
+runtime from within your Ruby project.
+
+Why would you want that? [WebAssembly](https://webassembly.org/) (or WASM) is a
+technology that allows you to write a program in a fast and safe way. Wasmtime
+is a runtime that allows you to execute WASM programs. This gem embeds Wasmtime
+within a native extention so you can execute a WASM program from Ruby. Programs
+written in WASM will run at near-native speeds in a safe sandboxed environment.
+
+This project is pretty experimental and not production ready right now. There
+are quite a few things that aren't built yet, see [TODO](#todo) section below.
+
+**Note:** [WebAssembly Interface Types](https://github.com/webassembly/interface-types)
+support has been [temporarily removed](https://github.com/bytecodealliance/wasmtime/pull/1292)
+from Wasmtime. Therefore, only 32 and 64-bit integers and floats are currently
+supported.
+
 ## Usage
 
 Install the `wasmtime` gem.
@@ -17,20 +36,31 @@ gem install wasmtime
 ```
 
 Given a you have WASM module in your current directory, such as the example
-`markdown.wasm` built from [here](https://github.com/dtcristo/wasmtime-ruby/tree/master/wasm/markdown).
+`fibonacci.wasm` built from [here](https://github.com/dtcristo/wasmtime-ruby/tree/master/wasm/fibonacci).
 
-First `require 'wasmtime'` to activate the Wasmtime require patch, allowing you
-to require any `*.wasm` module as if it were a Ruby file. Doing so will
-internally create a `Wasmtime::Instance` and define a Ruby module with functions
-for each export.
+First `require 'wasmtime/require'` to activate the Wasmtime require patch,
+allowing you to require any `*.wasm` module as if it were a Ruby file. Doing so
+will internally create a `Wasmtime::Instance` and define a Ruby module with
+functions for each export.
 
-Finally, invoke the `render` export like so.
+Finally, invoke the `fib` export like so.
+
+```rb
+require 'wasmtime/require'
+require_relative 'fibonacci'
+
+puts Fibonacci.fib(11) #=> 89
+```
+
+If you don't like all the magic in the example above, you can do the same
+without the require patch. If your project is going to be a dependency of others
+use this approach too.
 
 ```rb
 require 'wasmtime'
-require_relative 'markdown'
 
-puts Markdown.render('# Hello, Ruby!') #=> <h1>Hello, Ruby!</h1>
+instance = Wasmtime::Instance.new('fibonacci.wasm')
+puts instance.funcs[:fib].call(11) #=> 89
 ```
 
 ## Development
@@ -58,3 +88,9 @@ Format source code.
 ```sh
 rake format
 ```
+
+# TODO
+
+- Add support for raw memory access and other types of exports
+- Add support for imports
+- Add support for WASM Interface Types when they are supported in Wasmtime
