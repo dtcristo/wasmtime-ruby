@@ -89,7 +89,7 @@ Format source code.
 rake format
 ```
 
-# TODO
+## TODO
 
 - Add support for raw memory access and other types of exports
 - Add support for imports
