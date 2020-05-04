@@ -102,19 +102,19 @@ fn translate_incoming(args: Array, param_types: &[RubyType]) -> Vec<w::Val> {
             RubyType::Float32 => w::Val::F32(
                 (arg.try_convert_to::<Float>()
                     .expect("failed to convert float")
-                    .to_f64() as f32).to_bits(),
+                    .to_f64() as f32)
+                    .to_bits(),
             ),
             RubyType::Float64 => w::Val::F64(
                 arg.try_convert_to::<Float>()
                     .expect("failed to convert float")
-                    .to_f64().to_bits(),
+                    .to_f64()
+                    .to_bits(),
             ),
-            RubyType::NilClass | RubyType::Unsupported => {
-                raise(
-                    "StandardError",
-                    &format!("unsupported arg type: {:?}", param_type),
-                )
-            }
+            RubyType::NilClass | RubyType::Unsupported => raise(
+                "StandardError",
+                &format!("unsupported arg type: {:?}", param_type),
+            ),
         })
         .collect()
 }
