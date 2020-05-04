@@ -6,13 +6,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [ubuntu-latest, macOS-latest, windows-latest]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-ruby@v1
         with:
-          ruby-version: "2.x"
+          ruby-version: "2.6"
       - run: bundle install
       - run: rake build
       - run: rake spec
