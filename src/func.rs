@@ -63,8 +63,8 @@ enum RubyType {
     Integer64,
     Float32,
     Float64,
-    String,
-    Boolean,
+    // String,
+    // Boolean,
     NilClass,
     Unsupported,
 }
@@ -109,7 +109,7 @@ fn translate_incoming(args: Array, param_types: &[RubyType]) -> Vec<w::Val> {
                     .expect("failed to convert float")
                     .to_f64().to_bits(),
             ),
-            RubyType::String | RubyType::Boolean | RubyType::NilClass | RubyType::Unsupported => {
+            RubyType::NilClass | RubyType::Unsupported => {
                 raise(
                     "StandardError",
                     &format!("unsupported arg type: {:?}", param_type),
