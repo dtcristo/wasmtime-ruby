@@ -29,7 +29,7 @@ supported.
 
 ## Usage
 
-Install the `wasmtime` gem.
+Install the `wasmtime` gem. Compiling the native extension requires [Rust](https://rustup.rs/).
 
 ```sh
 gem install wasmtime
