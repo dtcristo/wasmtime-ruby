@@ -11,7 +11,12 @@ task :wasm do
     sh 'rustup target add wasm32-unknown-unknown'
   end
   unless system('wasm-pack --version')
-    sh 'curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh'
+    p Gem::Platform.local
+    if Gem::Platform.local.os == 'mswin'
+      sh 'cargo install wasm-pack'
+    else
+      sh 'curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh'
+    end
   end
 
   cd 'wasm/fibonacci/'
