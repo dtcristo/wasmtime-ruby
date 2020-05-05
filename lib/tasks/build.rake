@@ -16,6 +16,6 @@ end
 
 desc 'Build native extension'
 task :build do
-  sh 'cargo build --release'
+  sh 'NO_LINK_RUTIE=true cargo build --release'
   cp SO, DL
 end
