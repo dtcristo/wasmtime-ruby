@@ -24,11 +24,12 @@ task :wasm do
   cp 'target/wasm32-unknown-unknown/release/fibonacci.wasm', '../'
 
   cd '../markdown/'
-  sh 'WASM_INTERFACE_TYPES=1 wasm-pack build'
+  ENV['WASM_INTERFACE_TYPES'] = '1'
+  sh 'wasm-pack build'
   cp 'pkg/markdown.wasm', '../'
 
   cd '../types/'
-  # sh 'WASM_INTERFACE_TYPES=1 wasm-pack build'
+  ENV['WASM_INTERFACE_TYPES'] = '0'
   sh 'wasm-pack build'
   # cp 'pkg/types.wasm', '../'
   cp 'pkg/types_bg.wasm', '../types.wasm'
