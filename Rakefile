@@ -7,6 +7,11 @@ import 'lib/tasks/build.rake'
 
 desc 'Build example WASM modules'
 task :wasm do
+  unless `rustup target list`.include?('wasm32-unknown-unknown (installed)')
+    sh 'rustup target add wasm32-unknown-unknown'
+  end
+  sh 'cargo install wasm-pack' unless system('wasm-pack --version')
+
   cd 'wasm/fibonacci/'
   sh 'cargo build --target wasm32-unknown-unknown --release'
   cp 'target/wasm32-unknown-unknown/release/fibonacci.wasm', '../'
@@ -37,5 +42,5 @@ end
 
 RSpec::Core::RakeTask.new(:spec)
 
-task spec: %i[wasm build]
+task spec: %i[build wasm]
 task default: :spec
