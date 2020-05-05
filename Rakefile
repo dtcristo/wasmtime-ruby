@@ -10,7 +10,9 @@ task :wasm do
   unless `rustup target list`.include?('wasm32-unknown-unknown (installed)')
     sh 'rustup target add wasm32-unknown-unknown'
   end
-  sh 'cargo install wasm-pack' unless system('wasm-pack --version')
+  unless system('wasm-pack --version')
+    sh 'curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh'
+  end
 
   cd 'wasm/fibonacci/'
   sh 'cargo build --target wasm32-unknown-unknown --release'

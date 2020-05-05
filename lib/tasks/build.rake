@@ -20,7 +20,6 @@ task :build do
     sh 'rustup target add wasm32-unknown-unknown'
   end
 
-  ENV['NO_LINK_RUTIE'] = 'true'
-  sh 'cargo build --release'
+  sh 'NO_LINK_RUTIE=true cargo build --release'
   cp SO, DL
 end
