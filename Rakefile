@@ -23,16 +23,15 @@ task :wasm do
   sh 'cargo build --target wasm32-unknown-unknown --release'
   cp 'target/wasm32-unknown-unknown/release/fibonacci.wasm', '../'
 
+  cd '../types/'
+  sh 'wasm-pack build'
+  # cp 'pkg/types.wasm', '../'
+  cp 'pkg/types_bg.wasm', '../types.wasm'
+
   cd '../markdown/'
   ENV['WASM_INTERFACE_TYPES'] = '1'
   sh 'wasm-pack build'
   cp 'pkg/markdown.wasm', '../'
-
-  cd '../types/'
-  ENV['WASM_INTERFACE_TYPES'] = '0'
-  sh 'wasm-pack build'
-  # cp 'pkg/types.wasm', '../'
-  cp 'pkg/types_bg.wasm', '../types.wasm'
 
   cd '../../'
 end

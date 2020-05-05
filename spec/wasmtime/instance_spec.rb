@@ -17,18 +17,6 @@ describe Wasmtime::Instance do
     end
   end
 
-  xcontext 'with markdown module' do
-    let(:module_path) { 'wasm/markdown.wasm' }
-
-    describe '#funcs' do
-      subject(:funcs) { instance.funcs }
-
-      it 'has render function' do
-        expect(funcs[:render]).to be_a(Wasmtime::Func)
-      end
-    end
-  end
-
   context 'with types module' do
     let(:module_path) { 'wasm/types.wasm' }
 
@@ -37,6 +25,18 @@ describe Wasmtime::Instance do
 
       it 'has sum function' do
         expect(funcs[:sum]).to be_a(Wasmtime::Func)
+      end
+    end
+  end
+
+  xcontext 'with markdown module' do
+    let(:module_path) { 'wasm/markdown.wasm' }
+
+    describe '#funcs' do
+      subject(:funcs) { instance.funcs }
+
+      it 'has render function' do
+        expect(funcs[:render]).to be_a(Wasmtime::Func)
       end
     end
   end
