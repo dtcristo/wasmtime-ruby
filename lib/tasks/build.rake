@@ -12,6 +12,7 @@ desc 'Remove build artifacts'
 task :clean do
   sh 'cargo clean'
   rm_rf SO
+  rm_rf DL
 end
 
 desc 'Build native extension'
