@@ -3,15 +3,15 @@
 require 'bundler/setup'
 require 'rspec/core/rake_task'
 
-import 'lib/tasks/build.rake'
+import 'lib/tasks/compile.rake'
 
-desc 'Build example WASM modules'
+desc 'Compile test WASM modules'
 task :wasm do
   unless `rustup target list`.include?('wasm32-unknown-unknown (installed)')
     sh 'rustup target add wasm32-unknown-unknown'
   end
   unless system('wasm-pack --version')
-    p Gem::Platform.local
+    pp Gem::Platform.local
     if Gem::Platform.local.os == 'mswin'
       sh 'cargo install wasm-pack'
     else
@@ -25,7 +25,6 @@ task :wasm do
 
   cd '../types/'
   sh 'wasm-pack build'
-  # cp 'pkg/types.wasm', '../'
   cp 'pkg/types_bg.wasm', '../types.wasm'
 
   cd '../markdown/'
@@ -45,9 +44,15 @@ task :format do
      '--write',
      '**/*.{rb,rake,gemspec}',
      '**/{Rakefile,Gemfile}'
+  sh 'git diff-index --quiet HEAD'
+end
+
+desc 'Build gem bundle'
+task :build do
+  sh 'gem build wasmtime.gemspec'
 end
 
 RSpec::Core::RakeTask.new(:spec)
 
-task spec: %i[build wasm]
+task spec: %i[compile wasm]
 task default: :spec
