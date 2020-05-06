@@ -1,10 +1,17 @@
 <div align="center">
   <h1>wasmtime-ruby</h1>
   <p>
-    <strong
-      ><a href="https://wasmtime.dev/">Wasmtime</a> WebAssembly runtime
-      integration for Ruby.</strong
-    >
+    <strong>
+      <a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a> WebAssembly runtime in Ruby
+    </strong>
+  </p>
+  <p>
+    <a href="https://rubygems.org/gems/wasmtime">
+      <img src="https://img.shields.io/gem/v/wasmtime" alt="RubyGems version badge" />
+    </a>
+    <a href="https://github.com/dtcristo/wasmtime-ruby/actions?query=workflow%3ACI">
+      <img src="https://img.shields.io/github/workflow/status/dtcristo/wasmtime-ruby/CI" alt="CI status badge" />
+    </a>
   </p>
 </div>
 
