@@ -23,7 +23,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: ${{ matrix.os == 'ubuntu-latest' }}
         with:
-          name: gem
+          name: gem-ruby
           path: wasmtime-*.gem
       - run: rm wasmtime-*.gem
         if: ${{ matrix.os == 'ubuntu-latest' }}
