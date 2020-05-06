@@ -14,7 +14,8 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/dtcristo/wasmtime-ruby'
   spec.license = 'Apache-2.0 WITH LLVM-exception'
 
-  spec.files = Dir['{lib,ext,src}/**/*', 'Cargo.*', 'LICENSE', 'README.md']
+  spec.files =
+    Dir['{.cargo,lib,ext,src}/**/*', 'Cargo.*', 'LICENSE', 'README.md']
   spec.require_paths = %w[lib]
 
   if ENV['NATIVE_BUNDLE']
