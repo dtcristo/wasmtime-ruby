@@ -38,12 +38,7 @@ end
 desc 'Format sources'
 task :format do
   sh 'cargo fmt'
-  sh 'bundle',
-     'exec',
-     'rbprettier',
-     '--write',
-     '**/*.{rb,rake,gemspec}',
-     '**/{Rakefile,Gemfile}'
+  sh 'bundle exec rbprettier --write **/*.{rb,rake,gemspec} **/{Rakefile,Gemfile}'
   sh 'git diff-index --quiet HEAD'
 end
 
