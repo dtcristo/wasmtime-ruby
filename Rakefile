@@ -6,6 +6,13 @@ require 'rspec/core/rake_task'
 
 import 'lib/tasks/compile.rake'
 
+desc 'Format sources'
+task :format do
+  sh 'cargo fmt'
+  sh 'bundle exec rbprettier --write **/*.{rb,rake,gemspec} **/{Rakefile,Gemfile}'
+  sh 'git diff-index --name-only HEAD'
+end
+
 desc 'Compile test WASM modules'
 task :wasm do
   unless `rustup target list`.include?('wasm32-unknown-unknown (installed)')
@@ -36,11 +43,9 @@ task :wasm do
   cd '../../'
 end
 
-desc 'Format sources'
-task :format do
-  sh 'cargo fmt'
-  sh 'bundle exec rbprettier --write **/*.{rb,rake,gemspec} **/{Rakefile,Gemfile}'
-  sh 'git diff-index --name-only HEAD'
+desc 'Verify gem installation'
+task :verify do
+  raise '`ruby examples/add.rb` failed' unless `ruby examples/add.rb` == "42\n"
 end
 
 RSpec::Core::RakeTask.new(:spec)

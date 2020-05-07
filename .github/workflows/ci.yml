@@ -39,8 +39,8 @@ jobs:
           name: gem-${{ matrix.os }}
           path: pkg/wasmtime-*.gem
 
-  verify:
-    name: Verify gem on ${{ matrix.os }}
+  install:
+    name: Install and verify on ${{ matrix.os }}
     needs: build
     runs-on: ${{ matrix.os }}
     strategy:
@@ -53,7 +53,16 @@ jobs:
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: "2.x"
+      - run: bundle install
       - uses: actions/download-artifact@v2
         with:
           name: gem-${{ matrix.os }}
-      - run: ls -al
+      - run: gem install wasmtime-*.gem
+      - run: rake verify
+      - run: gem uninstall wasmtime
+      - run: rm wasmtime-*.gem
+      - uses: actions/download-artifact@v2
+        with:
+          name: gem-ruby
+      - run: gem install wasmtime-*.gem
+      - run: rake verify
