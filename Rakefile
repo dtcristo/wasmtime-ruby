@@ -19,7 +19,6 @@ task :wasm do
     sh 'rustup target add wasm32-unknown-unknown'
   end
   unless system('wasm-pack --version')
-    pp Gem::Platform.local
     if Gem::Platform.local.os == 'mswin'
       sh 'cargo install wasm-pack'
     else
