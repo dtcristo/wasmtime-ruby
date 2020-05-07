@@ -42,9 +42,9 @@ Install the `wasmtime` gem. Pre-compiled binaries are available for
 gem install wasmtime
 ```
 
-WASM has two formats `*.wasm` (binary), and `*.wat` (human-readable text).
-`wasmtime-ruby` can read both formats. Given a you have the following
-`fibonacci.wat` in your current directory.
+WASM has two formats `*.wasm` (binary) and `*.wat` (human-readable text). Both
+formats are supported. With the following `fibonacci.wat` file in your current
+directory.
 
 ```wat
 ;; fibonacci.wat
