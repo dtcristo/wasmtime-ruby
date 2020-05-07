@@ -45,7 +45,11 @@ end
 
 desc 'Verify gem installation'
 task :verify do
-  raise '`ruby examples/add.rb` failed' unless `ruby examples/add.rb` == "42\n"
+  Bundler.with_unbundled_env do
+    unless `ruby examples/add.rb` == "42\n"
+      raise '`ruby examples/add.rb` failed'
+    end
+  end
 end
 
 RSpec::Core::RakeTask.new(:spec)
