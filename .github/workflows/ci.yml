@@ -12,9 +12,6 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v1
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "2.7"
       - run: ruby -e 'pp RbConfig::CONFIG'
       - run: bundle install
       - run: rake format
@@ -72,9 +69,6 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v1
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "2.7"
       - run: bundle install
       - uses: actions/download-artifact@v2
         with:
