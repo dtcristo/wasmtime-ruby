@@ -78,10 +78,10 @@ Install Ruby dependencies.
 bundle install
 ```
 
-Build Rust native extension.
+Compile Rust native extension.
 
 ```sh
-rake build
+rake compile
 ```
 
 Run test suite.
