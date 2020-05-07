@@ -13,10 +13,9 @@ Gem::Specification.new do |spec|
   spec.summary = 'Wasmtime WebAssembly runtime'
   # spec.description = 'TODO: Write a longer description or delete this line.'
   spec.homepage = 'https://github.com/dtcristo/wasmtime-ruby'
-  # spec.required_ruby_version = Gem::Requirement.new('>= 2.3.0')
+  spec.required_ruby_version = '>= 2.5.0'
   spec.license = 'Apache-2.0 WITH LLVM-exception'
 
-  spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = spec.homepage
   # spec.metadata['changelog_uri'] = "TODO: Put your gem's CHANGELOG.md URL here."
 
