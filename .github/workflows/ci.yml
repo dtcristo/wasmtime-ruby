@@ -88,5 +88,17 @@ jobs:
     needs: [build, install_native, install_ruby]
     runs-on: ubuntu-latest
     steps:
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.7"
       - uses: actions/download-artifact@v2
-      - run: ls -al
+      - run: mkdir -p ~/.gem/
+      - run: |
+          cat << EOF > ~/.gem/credentials
+          ---
+          :rubygems_api_key: test
+          EOF
+      - run: cat ~/.gem/credentials
+      - run: gem push gem-ubuntu-latest/wasmtime-*.gem
+      - run: gem push gem-macos-latest/wasmtime-*.gem
+      - run: gem push gem-ruby/wasmtime-*.gem
