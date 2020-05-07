@@ -29,9 +29,9 @@ jobs:
           path: pkg/wasmtime-*.gem
       - run: rm pkg/wasmtime-*.gem
         if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: bundle exec rake compile
-      - run: bundle exec rake wasm
-      - run: bundle exec rake spec
+      # - run: bundle exec rake compile
+      # - run: bundle exec rake wasm
+      # - run: bundle exec rake spec
       - run: bundle exec rake build
         env:
           NATIVE_BUNDLE: "1"
@@ -52,15 +52,15 @@ jobs:
         ruby: ["2.5", "2.6", "2.7"]
     steps:
       - uses: actions/checkout@v1
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby }}
-      - run: bundle install
-      - uses: actions/download-artifact@v2
-        with:
-          name: gem-${{ matrix.os }}
-      - run: gem install wasmtime-*.gem
-      - run: bundle exec rake verify
+      # - uses: ruby/setup-ruby@v1
+      #   with:
+      #     ruby-version: ${{ matrix.ruby }}
+      # - run: bundle install
+      # - uses: actions/download-artifact@v2
+      #   with:
+      #     name: gem-${{ matrix.os }}
+      # - run: gem install wasmtime-*.gem
+      # - run: bundle exec rake verify
 
   install_ruby:
     name: Install, compile and verify on ${{ matrix.os }}
@@ -73,15 +73,15 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v1
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "2.7"
-      - run: bundle install
-      - uses: actions/download-artifact@v2
-        with:
-          name: gem-ruby
-      - run: gem install wasmtime-*.gem
-      - run: bundle exec rake verify
+      # - uses: ruby/setup-ruby@v1
+      #   with:
+      #     ruby-version: "2.7"
+      # - run: bundle install
+      # - uses: actions/download-artifact@v2
+      #   with:
+      #     name: gem-ruby
+      # - run: gem install wasmtime-*.gem
+      # - run: bundle exec rake verify
 
   publish:
     name: Publish to RubyGems
@@ -94,11 +94,11 @@ jobs:
       - uses: actions/download-artifact@v2
       - run: mkdir -p ~/.gem/
       - run: |
-          cat << EOF > ~/.gem/credentials
+          cat <<EOF > ~/.gem/credentials
           ---
           :rubygems_api_key: test
           EOF
-      - run: cat ~/.gem/credentials
+      - run: chmod 0600 ~/.gem/credentials
       - run: gem push gem-ubuntu-latest/wasmtime-*.gem
       - run: gem push gem-macos-latest/wasmtime-*.gem
       - run: gem push gem-ruby/wasmtime-*.gem
