@@ -13,16 +13,24 @@ module Kernel
   def require(path)
     wasmtime_original_require(path)
   rescue LoadError => load_error
-    path = "#{path}.wasm" unless path.end_with?('.wasm')
+    try_load =
+      Proc.new do |path, extention|
+        path_with_extention =
+          path.end_with?(".#{extention}") ? path : "#{path}.#{extention}"
 
-    if path.start_with?('.', '/', '~')
-      absolute_path = File.expand_path(path)
-      return Wasmtime.load(absolute_path) if File.file?(absolute_path)
-    end
-    $LOAD_PATH.each do |load_dir|
-      absolute_path = File.expand_path(path, load_dir)
-      return Wasmtime.load(absolute_path) if File.file?(absolute_path)
-    end
+        if path_with_extention.start_with?('.', '/', '~')
+          absolute_path = File.expand_path(path_with_extention)
+          return Wasmtime.load(absolute_path) if File.file?(absolute_path)
+        end
+        $LOAD_PATH.each do |load_dir|
+          absolute_path = File.expand_path(path_with_extention, load_dir)
+          return Wasmtime.load(absolute_path) if File.file?(absolute_path)
+        end
+      end
+
+    try_load.call(path, 'wasm')
+    try_load.call(path, 'wat')
+
     raise load_error
   end
 
@@ -43,12 +51,17 @@ module Wasmtime
 
   def load(absolute_path)
     return false if $LOADED_FEATURES.include?(absolute_path)
-    const =
-      absolute_path.split(File::SEPARATOR).last.delete_suffix('.wasm').camelize
-    mod = Object.const_set(const, Module.new)
+    filename = absolute_path.split(File::SEPARATOR).last
+    module_name =
+      if filename.end_with?('.wasm')
+        filename.delete_suffix('.wasm')
+      else
+        filename.delete_suffix('.wat')
+      end
+    mod = Object.const_set(module_name.camelize, Module.new)
     instance = Wasmtime::Instance.new(absolute_path)
     instance.funcs.each do |name, func|
-      mod.define_singleton_method(name) { |args| func.call(args) }
+      mod.define_singleton_method(name) { |*args| func.call(*args) }
     end
     $LOADED_FEATURES << absolute_path
     true
