@@ -44,9 +44,6 @@ task :verify do
     unless `ruby examples/fibonacci.rb` == "89\n"
       raise '`ruby examples/fibonacci.rb` failed'
     end
-    unless `ruby examples/types.rb` == "42\n"
-      raise '`ruby examples/types.rb` failed'
-    end
   end
 end
 
