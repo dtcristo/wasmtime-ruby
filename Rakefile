@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
+require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
 
 import 'lib/tasks/compile.rake'
@@ -40,11 +41,6 @@ task :format do
   sh 'cargo fmt'
   sh 'bundle exec rbprettier --write **/*.{rb,rake,gemspec} **/{Rakefile,Gemfile}'
   sh 'git diff-index --quiet HEAD'
-end
-
-desc 'Build gem bundle'
-task :build do
-  sh 'gem build wasmtime.gemspec'
 end
 
 RSpec::Core::RakeTask.new(:spec)
