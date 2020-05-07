@@ -4,7 +4,7 @@ RSpec.describe Wasmtime::Instance do
   subject(:instance) { described_class.new(module_path) }
 
   context 'with fibonacci module' do
-    let(:module_path) { 'wasm/fibonacci.wasm' }
+    let(:module_path) { 'wasm/fibonacci.wat' }
 
     describe '#funcs' do
       subject(:funcs) { instance.funcs }

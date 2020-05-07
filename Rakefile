@@ -26,11 +26,7 @@ task :wasm do
     end
   end
 
-  cd 'wasm/fibonacci/'
-  sh 'cargo build --target wasm32-unknown-unknown --release'
-  cp 'target/wasm32-unknown-unknown/release/fibonacci.wasm', '../'
-
-  cd '../types/'
+  cd 'wasm/types/'
   sh 'wasm-pack build'
   cp 'pkg/types_bg.wasm', '../types.wasm'
 
@@ -45,8 +41,11 @@ end
 desc 'Verify gem installation'
 task :verify do
   Bundler.with_unbundled_env do
-    unless `ruby examples/add.rb` == "42\n"
-      raise '`ruby examples/add.rb` failed'
+    unless `ruby examples/fibonacci.rb` == "89\n"
+      raise '`ruby examples/fibonacci.rb` failed'
+    end
+    unless `ruby examples/types.rb` == "42\n"
+      raise '`ruby examples/types.rb` failed'
     end
   end
 end

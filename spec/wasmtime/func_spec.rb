@@ -17,7 +17,7 @@ RSpec.describe Wasmtime::Func do
   end
 
   context 'with fibonacci module fib export' do
-    let(:module_path) { 'wasm/fibonacci.wasm' }
+    let(:module_path) { 'wasm/fibonacci.wat' }
     let(:export) { :fib }
     let(:expected_signature) { { params: %w[Integer32], result: 'Integer32' } }
     let(:args) { [11] }

@@ -42,13 +42,32 @@ Install the `wasmtime` gem. Pre-compiled binaries are available for
 gem install wasmtime
 ```
 
-Given a you have WASM module in your current directory, such as the example
-`fibonacci.wasm` built from [here](https://github.com/dtcristo/wasmtime-ruby/tree/master/wasm/fibonacci).
+WASM has two formats `*.wasm` for binary files, and `*.wat`. `wasmtime-ruby` can
+read both formats. Given a you have the following `fibonacci.wat` in your
+current directory.
 
-First `require 'wasmtime/require'` to activate the Wasmtime require patch,
-allowing you to require any `*.wasm` module as if it were a Ruby file. Doing so
-will internally create a `Wasmtime::Instance` and define a Ruby module with
-functions for each export.
+```wat
+;; fibonacci.wat
+(module
+  (export "fib" (func $fib))
+  (func $fib (param $n i32) (result i32)
+    (if (i32.lt_s (get_local $n) (i32.const 2))
+      (return (i32.const 1))
+    )
+    (return
+      (i32.add
+        (call $fib (i32.sub (get_local $n) (i32.const 2)))
+        (call $fib (i32.sub (get_local $n) (i32.const 1)))
+      )
+    )
+  )
+)
+```
+
+In a ruby file, `require 'wasmtime/require'` to activate the Wasmtime require
+patch, allowing you to require any `*.wasm` or `*.wat` module as if it were a
+Ruby file. Doing so will internally create a `Wasmtime::Instance` and define a
+Ruby module with functions for each export.
 
 Finally, invoke the `fib` export like so.
 
@@ -66,14 +85,18 @@ use this approach too.
 ```rb
 require 'wasmtime'
 
-instance = Wasmtime::Instance.new('fibonacci.wasm')
+instance = Wasmtime::Instance.new('fibonacci.wat')
 puts instance.funcs[:fib].call(11) #=> 89
 ```
 
+## Benchmarks
+
+None yet. But they will be impressive.
+
 ## Examples
 
-More usage examples are provided in `examples/`. To run these, you first need to
-compiling the test WASM modules.
+More usage examples are provided in `examples/`. To run some of these, you first
+need to compile the test WASM modules.
 
 Install some Rust tools.
 
