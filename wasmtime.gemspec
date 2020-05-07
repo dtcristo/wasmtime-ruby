@@ -19,10 +19,10 @@ Gem::Specification.new do |spec|
   spec.license = 'Apache-2.0 WITH LLVM-exception'
 
   spec.metadata['source_code_uri'] = spec.homepage
-  # spec.metadata['changelog_uri'] = "TODO: Put your gem's CHANGELOG.md URL here."
+  spec.metadata['changelog_uri'] =
+    'https://github.com/dtcristo/wasmtime-ruby/blob/master/CHANGELOG.md'
 
-  spec.files =
-    Dir['{.cargo,ext,lib,src}/**/*', 'Cargo.*', 'LICENSE', 'README.md']
+  spec.files = Dir['{.cargo,ext,lib,src}/**/*', 'Cargo.*', 'LICENSE', '*.md']
   if ENV['NATIVE_BUNDLE']
     spec.platform = Gem::Platform::CURRENT
   else
