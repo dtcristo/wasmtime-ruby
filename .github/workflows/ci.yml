@@ -12,9 +12,9 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "2.x"
+          ruby-version: "2.7"
       - run: ruby -e 'pp RbConfig::CONFIG'
       - run: bundle install
       - run: rake format
@@ -39,8 +39,30 @@ jobs:
           name: gem-${{ matrix.os }}
           path: pkg/wasmtime-*.gem
 
-  install:
-    name: Install and verify on ${{ matrix.os }}
+  install_native:
+    name: Install and verify on ${{ matrix.os }} with Ruby ${{ matrix.ruby }}
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
+        ruby: ["2.5", "2.6", "2.7"]
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - run: bundle install
+      - uses: actions/download-artifact@v2
+        with:
+          name: gem-${{ matrix.os }}
+      - run: gem install wasmtime-*.gem
+      - run: rake verify
+
+  install_ruby:
+    name: Install, compile and verify on ${{ matrix.os }}
     needs: build
     runs-on: ${{ matrix.os }}
     strategy:
@@ -50,19 +72,20 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "2.x"
+          ruby-version: "2.7"
       - run: bundle install
-      - uses: actions/download-artifact@v2
-        with:
-          name: gem-${{ matrix.os }}
-      - run: gem install wasmtime-*.gem
-      - run: rake verify
-      - run: gem uninstall wasmtime
-      - run: rm wasmtime-*.gem
       - uses: actions/download-artifact@v2
         with:
           name: gem-ruby
       - run: gem install wasmtime-*.gem
       - run: rake verify
+
+  publish:
+    name: Publish to RubyGems
+    needs: [build, install_native, install_ruby]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+      - run: ls -al
