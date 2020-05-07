@@ -190,8 +190,8 @@ RSpec.describe Wasmtime::Func do
     #   include_examples '#signature and #call'
     # end
 
-    context 'sum export' do
-      let(:export) { :sum }
+    context 'add export' do
+      let(:export) { :add }
       let(:expected_signature) do
         { params: %w[Integer32 Integer32], result: 'Integer32' }
       end
@@ -202,13 +202,13 @@ RSpec.describe Wasmtime::Func do
     end
   end
 
-  xcontext 'with markdown module render export' do
-    let(:module_path) { 'wasm/markdown.wasm' }
-    let(:export) { :render }
-    let(:expected_signature) { { params: %w[String], result: 'String' } }
-    let(:args) { ['# Hello, Ruby!'] }
-    let(:expected_result) { "<h1>Hello, Ruby!</h1>\n" }
+  # context 'with markdown module render export' do
+  #   let(:module_path) { 'wasm/markdown.wasm' }
+  #   let(:export) { :render }
+  #   let(:expected_signature) { { params: %w[String], result: 'String' } }
+  #   let(:args) { ['# Hello, Ruby!'] }
+  #   let(:expected_result) { "<h1>Hello, Ruby!</h1>\n" }
 
-    include_examples '#signature and #call'
-  end
+  #   include_examples '#signature and #call'
+  # end
 end

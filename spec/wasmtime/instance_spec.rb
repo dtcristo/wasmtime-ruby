@@ -21,21 +21,21 @@ RSpec.describe Wasmtime::Instance do
     describe '#funcs' do
       subject(:funcs) { instance.funcs }
 
-      it 'has sum function' do
-        expect(funcs[:sum]).to be_a(Wasmtime::Func)
+      it 'has add function' do
+        expect(funcs[:add]).to be_a(Wasmtime::Func)
       end
     end
   end
 
-  xcontext 'with markdown module' do
-    let(:module_path) { 'wasm/markdown.wasm' }
+  # context 'with markdown module' do
+  #   let(:module_path) { 'wasm/markdown.wasm' }
 
-    describe '#funcs' do
-      subject(:funcs) { instance.funcs }
+  #   describe '#funcs' do
+  #     subject(:funcs) { instance.funcs }
 
-      it 'has render function' do
-        expect(funcs[:render]).to be_a(Wasmtime::Func)
-      end
-    end
-  end
+  #     it 'has render function' do
+  #       expect(funcs[:render]).to be_a(Wasmtime::Func)
+  #     end
+  #   end
+  # end
 end

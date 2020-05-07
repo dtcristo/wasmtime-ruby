@@ -84,6 +84,6 @@ pub fn str_string(x: &str) -> String {
 }
 
 #[wasm_bindgen]
-pub fn sum(x: i32, y: i32) -> i32 {
+pub fn add(x: i32, y: i32) -> i32 {
     x + y
 }
