@@ -93,11 +93,11 @@ jobs:
         with:
           ruby-version: "2.7"
       - uses: actions/download-artifact@v2
-      - run: mkdir -p ~/.gem/
+      - run: mkdir -p ~/.gem
       - run: |
           cat <<EOF > ~/.gem/credentials
           ---
-          :rubygems_api_key: test
+          :rubygems_api_key: ${{ secrets.RUBYGEMS_API_KEY }}
           EOF
       - run: chmod 0600 ~/.gem/credentials
       - run: gem push gem-ubuntu-latest/wasmtime-*.gem
