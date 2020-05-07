@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require 'wasmtime'
-
-describe Wasmtime::Func do
+RSpec.describe Wasmtime::Func do
   subject(:func) { instance.funcs[export] }
   let(:instance) { Wasmtime::Instance.new(module_path) }
 

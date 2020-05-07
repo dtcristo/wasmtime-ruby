@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require 'wasmtime'
-
-describe Wasmtime::Instance do
+RSpec.describe Wasmtime::Instance do
   subject(:instance) { described_class.new(module_path) }
 
   context 'with fibonacci module' do

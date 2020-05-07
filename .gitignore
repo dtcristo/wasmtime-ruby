@@ -8,3 +8,4 @@ target/
 Cargo.lock
 !/Cargo.lock
 Gemfile.lock
+spec/examples.txt

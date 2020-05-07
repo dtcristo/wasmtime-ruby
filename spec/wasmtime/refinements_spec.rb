@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-require 'wasmtime'
-
 using Wasmtime::Refinements
 
-describe Wasmtime::Refinements do
+RSpec.describe Wasmtime::Refinements do
   describe 'String' do
     describe '#camelize' do
       it 'should camelize single word' do

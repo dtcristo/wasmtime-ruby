@@ -2,7 +2,7 @@
 
 require 'wasmtime/require'
 
-describe 'require' do
+RSpec.describe 'require' do
   it 'should load fibonacci module' do
     expect(require_relative('../../wasm/fibonacci')).to be_truthy
     fibonacci_lib = File.expand_path('../../wasm', __dir__)
