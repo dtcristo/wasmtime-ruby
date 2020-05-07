@@ -19,16 +19,16 @@ jobs:
       - run: ruby -e 'pp RbConfig::CONFIG'
       - run: bundle install
       - run: bundle exec rake format
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: matrix.os == 'ubuntu-latest'
       - run: bundle exec rake build
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: matrix.os == 'ubuntu-latest'
       - uses: actions/upload-artifact@v2
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: matrix.os == 'ubuntu-latest'
         with:
           name: gem-ruby
           path: pkg/wasmtime-*.gem
       - run: rm pkg/wasmtime-*.gem
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: matrix.os == 'ubuntu-latest'
       # - run: bundle exec rake compile
       # - run: bundle exec rake wasm
       # - run: bundle exec rake spec
@@ -87,6 +87,7 @@ jobs:
     name: Publish to RubyGems
     needs: [build, install_native, install_ruby]
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
     steps:
       - uses: ruby/setup-ruby@v1
         with:
