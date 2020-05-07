@@ -29,7 +29,7 @@ execute a WASM program from Ruby.
 This project is pretty experimental and not production ready right now. There
 are quite a few things that aren't built yet, see [TODO](#todo) section below.
 
-**Note:** [WebAssembly Interface Types](https://github.com/webassembly/interface-types)
+**Note:** [WebAssembly Interface Types](https://github.com/WebAssembly/interface-types/blob/master/proposals/interface-types/Explainer.md)
 support has been [temporarily removed](https://github.com/bytecodealliance/wasmtime/pull/1292)
 from Wasmtime. Therefore, only 32 and 64-bit integers and floats are currently
 supported.
@@ -101,4 +101,5 @@ rake format
 - Add support for raw memory access and other types of exports
 - Add support for imports
 - Implement more of the Wasmtime API
+- Add benchmarks for WASM program against ones in pure Ruby and true native
 - Add support for WASM Interface Types when they are supported in Wasmtime
