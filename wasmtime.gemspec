@@ -11,7 +11,9 @@ Gem::Specification.new do |spec|
   spec.email = %w[david@dtcristo.com]
 
   spec.summary = 'Wasmtime WebAssembly runtime'
-  # spec.description = 'TODO: Write a longer description or delete this line.'
+  spec.description =
+    'This gem allows you to use the Wasmtime WebAssembly runtime from within your Ruby project.'
+
   spec.homepage = 'https://github.com/dtcristo/wasmtime-ruby'
   spec.required_ruby_version = '>= 2.5.0'
   spec.license = 'Apache-2.0 WITH LLVM-exception'
