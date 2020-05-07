@@ -40,7 +40,7 @@ desc 'Format sources'
 task :format do
   sh 'cargo fmt'
   sh 'bundle exec rbprettier --write **/*.{rb,rake,gemspec} **/{Rakefile,Gemfile}'
-  sh 'git diff-index --quiet HEAD'
+  sh 'git diff-index --name-only HEAD'
 end
 
 RSpec::Core::RakeTask.new(:spec)
