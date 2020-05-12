@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors = ['David Cristofaro']
   spec.email = %w[david@dtcristo.com]
 
-  spec.summary = 'Ruby bindings for the Wasmtime WebAssembly runtime'
+  spec.summary = 'Ruby bindings for Wasmtime, a WebAssembly runtime'
 
   spec.homepage = 'https://github.com/dtcristo/wasmtime-ruby'
   spec.required_ruby_version = '>= 2.5.0'

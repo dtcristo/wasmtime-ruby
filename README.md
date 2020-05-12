@@ -2,7 +2,7 @@
   <h1>wasmtime-ruby</h1>
   <p>
     <strong>
-      Ruby bindings for the <a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a> WebAssembly runtime
+      Ruby bindings for <a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a>, a WebAssembly runtime
     </strong>
   </p>
   <p>
@@ -17,14 +17,10 @@
 
 ## Introduction
 
-This project provides Ruby bindings for the [Wasmtime](https://github.com/bytecodealliance/wasmtime)
-WebAssembly runtime, allowing you to execute WebAssembly modules from within
-Ruby.
-
-Why would you want that? [WebAssembly](https://webassembly.org/) (or WASM) is a
-technology that allows you to write programs that run at near-native speeds in a
-safe sandboxed environment. Wasmtime is a runtime for WASM programs. This gem
-embedds Wasmtime in a native extension so you can now run WASM from Ruby.
+This project provides Ruby bindings for [Wasmtime](https://github.com/bytecodealliance/wasmtime),
+a [WebAssembly](https://webassembly.org/) runtime. This allows you to execute
+WASM modules from within Ruby executing at near-native speeds in a safe
+sandboxed environment.
 
 This is pretty experimental and not production ready right now. There are quite
 a few things that aren't built yet, see [TODO](#todo) section below.
@@ -43,7 +39,7 @@ Install the `wasmtime` gem. Pre-compiled binaries are available for
 gem install wasmtime
 ```
 
-WASM has two formats `*.wasm` (binary) and `*.wat` (human-readable text). Both
+WASM has two formats `.wasm` (binary) and `.wat` (human-readable text). Both
 formats are supported. With the following `fibonacci.wat` file in your current
 directory.
 
@@ -66,7 +62,7 @@ directory.
 ```
 
 In a ruby file, `require 'wasmtime/require'` to activate the Wasmtime require
-patch, allowing you to require any `*.wasm` or `*.wat` module as if it were a
+patch, allowing you to require any `.wasm` or `.wat` module as if it were a
 Ruby file. Doing so will internally create a `Wasmtime::Instance` and define a
 Ruby module with functions for each export.
 
