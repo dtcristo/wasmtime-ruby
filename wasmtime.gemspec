@@ -10,17 +10,17 @@ Gem::Specification.new do |spec|
   spec.authors = ['David Cristofaro']
   spec.email = %w[david@dtcristo.com]
 
-  spec.summary = 'Wasmtime WebAssembly runtime'
-  spec.description =
-    'This gem allows you to use the Wasmtime WebAssembly runtime from within your Ruby project.'
+  spec.summary = 'Ruby bindings for the Wasmtime WebAssembly runtime'
 
   spec.homepage = 'https://github.com/dtcristo/wasmtime-ruby'
   spec.required_ruby_version = '>= 2.5.0'
   spec.license = 'Apache-2.0 WITH LLVM-exception'
 
-  spec.metadata['source_code_uri'] = spec.homepage
-  spec.metadata['changelog_uri'] =
-    'https://github.com/dtcristo/wasmtime-ruby/blob/master/CHANGELOG.md'
+  spec.metadata = {
+    'source_code_uri' => spec.homepage,
+    'changelog_uri' =>
+      'https://github.com/dtcristo/wasmtime-ruby/blob/master/CHANGELOG.md'
+  }
 
   spec.files = Dir['{.cargo,ext,lib,src}/**/*', 'Cargo.*', 'LICENSE', '*.md']
   if ENV['NATIVE_BUNDLE']

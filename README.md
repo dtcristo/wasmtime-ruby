@@ -2,7 +2,7 @@
   <h1>wasmtime-ruby</h1>
   <p>
     <strong>
-      <a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a> WebAssembly runtime in Ruby
+      Ruby bindings for the <a href="https://github.com/bytecodealliance/wasmtime">Wasmtime</a> WebAssembly runtime
     </strong>
   </p>
   <p>
@@ -17,8 +17,9 @@
 
 ## Introduction
 
-This gem allows you to use the [Wasmtime](https://wasmtime.dev/) WebAssembly
-runtime from within your Ruby project.
+This project provides Ruby bindings for the [Wasmtime](https://github.com/bytecodealliance/wasmtime)
+WebAssembly runtime, allowing you to execute WebAssembly modules from within
+Ruby.
 
 Why would you want that? [WebAssembly](https://webassembly.org/) (or WASM) is a
 technology that allows you to write programs that run at near-native speeds in a
