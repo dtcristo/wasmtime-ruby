@@ -1,11 +1,12 @@
 use rutie::{AnyObject, Object};
+use wasmtime as w;
 
 use crate::func::{Func, RubyFunc};
-use crate::memory::{Memory, RubyMemory};
+use crate::memory::RubyMemory;
 
 pub enum Export {
     Func(Func),
-    Memory(Memory),
+    Memory(w::Memory),
 }
 
 impl From<Export> for AnyObject {

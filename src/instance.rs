@@ -6,7 +6,6 @@ use wasmtime as w;
 
 use crate::export::Export;
 use crate::func::Func;
-use crate::memory::Memory;
 
 pub struct Instance {
     instance: w::Instance,
@@ -35,12 +34,13 @@ impl Instance {
             match export.ty() {
                 w::ExternType::Func(_) => {
                     let name = export.name().to_string();
-                    let func = Func::new(export.into_func().expect("failed to create func"));
+                    let func = Func::new(export.into_func().unwrap());
                     exports.insert(name, Export::Func(func));
                 }
                 w::ExternType::Memory(_) => {
-                    let memory = Memory::new();
-                    exports.insert(export.name().to_string(), Export::Memory(memory));
+                    let name = export.name().to_string();
+                    let memory = export.into_memory().unwrap();
+                    exports.insert(name, Export::Memory(memory));
                 }
                 _ => {}
             }
