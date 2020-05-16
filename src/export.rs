@@ -1,18 +1,18 @@
 use rutie::{AnyObject, Object};
 
-use crate::func::Func;
-use crate::memory::Memory;
+use crate::func::{Func, RubyFunc};
+use crate::memory::{Memory, RubyMemory};
 
 pub enum Export {
     Func(Func),
     Memory(Memory),
 }
 
-impl Into<AnyObject> for Export {
-    fn into(self) -> AnyObject {
-        match self {
-            Export::Func(func) => func.into_ruby().value().into(),
-            Export::Memory(memory) => memory.into_ruby().value().into(),
+impl From<Export> for AnyObject {
+    fn from(export: Export) -> Self {
+        match export {
+            Export::Func(func) => RubyFunc::from(func).value().into(),
+            Export::Memory(memory) => RubyMemory::from(memory).value().into(),
         }
     }
 }

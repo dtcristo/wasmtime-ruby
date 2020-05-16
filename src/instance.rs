@@ -48,16 +48,18 @@ impl Instance {
 
         exports
     }
-
-    pub fn into_ruby(self) -> RubyInstance {
-        Module::from_existing("Wasmtime")
-            .get_nested_class("Instance")
-            .wrap_data(self, &*INSTANCE_WRAPPER)
-    }
 }
 
 wrappable_struct!(Instance, InstanceWrapper, INSTANCE_WRAPPER);
 class!(RubyInstance);
+
+impl From<Instance> for RubyInstance {
+    fn from(instance: Instance) -> Self {
+        Module::from_existing("Wasmtime")
+            .get_nested_class("Instance")
+            .wrap_data(instance, &*INSTANCE_WRAPPER)
+    }
+}
 
 #[rustfmt::skip]
 methods!(
@@ -65,7 +67,7 @@ methods!(
     itself,
 
     fn ruby_instance_new(path: RString) -> RubyInstance {
-        Instance::new(path.expect("failed read path").to_string()).into_ruby()
+        Instance::new(path.expect("failed read path").to_string()).into()
     }
 
     fn ruby_instance_exports() -> Hash {

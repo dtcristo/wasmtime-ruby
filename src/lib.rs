@@ -2,6 +2,7 @@ mod export;
 mod func;
 mod instance;
 mod memory;
+mod ruby_type;
 mod vm;
 
 #[allow(non_snake_case)]

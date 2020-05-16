@@ -7,16 +7,18 @@ impl Memory {
     pub fn new() -> Self {
         Memory {}
     }
-
-    pub fn into_ruby(self) -> RubyMemory {
-        Module::from_existing("Wasmtime")
-            .get_nested_class("Memory")
-            .wrap_data(self, &*MEMORY_WRAPPER)
-    }
 }
 
 wrappable_struct!(Memory, MemoryWrapper, MEMORY_WRAPPER);
 class!(RubyMemory);
+
+impl From<Memory> for RubyMemory {
+    fn from(memory: Memory) -> Self {
+        Module::from_existing("Wasmtime")
+            .get_nested_class("Memory")
+            .wrap_data(memory, &*MEMORY_WRAPPER)
+    }
+}
 
 #[rustfmt::skip]
 methods!(

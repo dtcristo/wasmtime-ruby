@@ -8,7 +8,8 @@ use rutie::{
 use std::mem;
 use wasmtime as w;
 
-use crate::vm::*;
+use crate::ruby_type::RubyType;
+use crate::vm::raise;
 
 pub struct Func {
     func: w::Func,
@@ -23,55 +24,21 @@ impl Func {
         self.func.call(args).expect("failed to call func").to_vec()
     }
 
-    pub fn into_ruby(self) -> RubyFunc {
-        Module::from_existing("Wasmtime")
-            .get_nested_class("Func")
-            .wrap_data(self, &*FUNC_WRAPPER)
-    }
-
     fn parse_param_types(&self) -> Vec<RubyType> {
         self.func
             .ty()
             .params()
             .iter()
-            .map(|val_type| val_type_to_ruby_type(val_type))
+            .map(|val_type| val_type.into())
             .collect()
     }
 
     fn parse_result_type(&self) -> RubyType {
         match self.func.ty().results().len() {
             0 => RubyType::NilClass,
-            1 => val_type_to_ruby_type(self.func.ty().results().first().unwrap()),
+            1 => self.func.ty().results().first().unwrap().into(),
             _ => raise("StandardError", "multiple return values are not supported"),
         }
-    }
-}
-
-fn val_type_to_ruby_type(val_type: &w::ValType) -> RubyType {
-    match val_type {
-        w::ValType::I32 => RubyType::Integer32,
-        w::ValType::I64 => RubyType::Integer64,
-        w::ValType::F32 => RubyType::Float32,
-        w::ValType::F64 => RubyType::Float64,
-        _ => RubyType::Unsupported,
-    }
-}
-
-#[derive(Debug, Copy, Clone)]
-enum RubyType {
-    Integer32,
-    Integer64,
-    Float32,
-    Float64,
-    // String,
-    // Boolean,
-    NilClass,
-    Unsupported,
-}
-
-impl Into<AnyObject> for RubyType {
-    fn into(self) -> AnyObject {
-        RString::new_utf8(&format!("{:?}", self)).into()
     }
 }
 
@@ -140,6 +107,14 @@ fn translate_outgoing(native_results: Vec<w::Val>) -> AnyObject {
 
 wrappable_struct!(Func, FuncWrapper, FUNC_WRAPPER);
 class!(RubyFunc);
+
+impl From<Func> for RubyFunc {
+    fn from(func: Func) -> Self {
+        Module::from_existing("Wasmtime")
+            .get_nested_class("Func")
+            .wrap_data(func, &*FUNC_WRAPPER)
+    }
+}
 
 #[rustfmt::skip]
 methods!(
