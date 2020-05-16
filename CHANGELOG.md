@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Exported functions now live on `Wasmtime::Instance#exports` instead of `#funcs`.
+- Exports hash is now keyed by strings instead of symbols.
+
 ## [0.1.0] - 2020-05-07
 
 ### Added

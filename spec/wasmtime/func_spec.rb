@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Wasmtime::Func do
-  subject(:func) { instance.funcs[export] }
+  subject(:func) { instance.exports[export] }
   let(:instance) { Wasmtime::Instance.new(module_path) }
 
   shared_examples '#signature and #call' do
@@ -18,7 +18,7 @@ RSpec.describe Wasmtime::Func do
 
   context 'with fibonacci module fib export' do
     let(:module_path) { 'wasm/fibonacci.wat' }
-    let(:export) { :fib }
+    let(:export) { 'fib' }
     let(:expected_signature) { { params: %w[Integer32], result: 'Integer32' } }
     let(:args) { [11] }
     let(:expected_result) { 89 }
@@ -39,7 +39,7 @@ RSpec.describe Wasmtime::Func do
     let(:module_path) { 'wasm/types.wasm' }
 
     context 'void export' do
-      let(:export) { :void }
+      let(:export) { 'void' }
       let(:expected_signature) { { params: [], result: 'NilClass' } }
       let(:args) { [] }
       let(:expected_result) { nil }
@@ -48,7 +48,7 @@ RSpec.describe Wasmtime::Func do
     end
 
     context 'u8_u8 export' do
-      let(:export) { :u8_u8 }
+      let(:export) { 'u8_u8' }
       let(:expected_signature) do
         { params: %w[Integer32], result: 'Integer32' }
       end
@@ -59,7 +59,7 @@ RSpec.describe Wasmtime::Func do
     end
 
     context 'i8_i8 export' do
-      let(:export) { :i8_i8 }
+      let(:export) { 'i8_i8' }
       let(:expected_signature) do
         { params: %w[Integer32], result: 'Integer32' }
       end
@@ -70,7 +70,7 @@ RSpec.describe Wasmtime::Func do
     end
 
     context 'u16_u16 export' do
-      let(:export) { :u16_u16 }
+      let(:export) { 'u16_u16' }
       let(:expected_signature) do
         { params: %w[Integer32], result: 'Integer32' }
       end
@@ -81,7 +81,7 @@ RSpec.describe Wasmtime::Func do
     end
 
     context 'u32_u32 export' do
-      let(:export) { :u32_u32 }
+      let(:export) { 'u32_u32' }
       let(:expected_signature) do
         { params: %w[Integer32], result: 'Integer32' }
       end
@@ -92,7 +92,7 @@ RSpec.describe Wasmtime::Func do
     end
 
     context 'i32_i32 export' do
-      let(:export) { :i32_i32 }
+      let(:export) { 'i32_i32' }
       let(:expected_signature) do
         { params: %w[Integer32], result: 'Integer32' }
       end
@@ -103,7 +103,7 @@ RSpec.describe Wasmtime::Func do
     end
 
     context 'usize_usize export' do
-      let(:export) { :usize_usize }
+      let(:export) { 'usize_usize' }
       let(:expected_signature) do
         { params: %w[Integer32], result: 'Integer32' }
       end
@@ -114,7 +114,7 @@ RSpec.describe Wasmtime::Func do
     end
 
     context 'isize_isize export' do
-      let(:export) { :isize_isize }
+      let(:export) { 'isize_isize' }
       let(:expected_signature) do
         { params: %w[Integer32], result: 'Integer32' }
       end
@@ -125,7 +125,7 @@ RSpec.describe Wasmtime::Func do
     end
 
     # context 'u64_u64 export' do
-    #   let(:export) { :u64_u64 }
+    #   let(:export) { 'u64_u64' }
     #   let(:expected_signature) do
     #     { params: %w[Integer64], result: 'Integer64' }
     #   end
@@ -136,7 +136,7 @@ RSpec.describe Wasmtime::Func do
     # end
 
     # context 'i64_i64 export' do
-    #   let(:export) { :i64_i64 }
+    #   let(:export) { 'i64_i64' }
     #   let(:expected_signature) do
     #     { params: %w[Integer64], result: 'Integer64' }
     #   end
@@ -147,7 +147,7 @@ RSpec.describe Wasmtime::Func do
     # end
 
     context 'f32_f32 export' do
-      let(:export) { :f32_f32 }
+      let(:export) { 'f32_f32' }
       let(:expected_signature) { { params: %w[Float32], result: 'Float32' } }
       let(:args) { [3.14159] }
       let(:expected_result) { 6.28318 }
@@ -164,7 +164,7 @@ RSpec.describe Wasmtime::Func do
     end
 
     context 'f64_f64 export' do
-      let(:export) { :f64_f64 }
+      let(:export) { 'f64_f64' }
       let(:expected_signature) { { params: %w[Float64], result: 'Float64' } }
       let(:args) { [3.14159] }
       let(:expected_result) { 6.28318 }
@@ -173,7 +173,7 @@ RSpec.describe Wasmtime::Func do
     end
 
     # context 'bool_bool export' do
-    #   let(:export) { :bool_bool }
+    #   let(:export) { 'bool_bool' }
     #   let(:expected_signature) { { params: %w[Boolean], result: 'Boolean' } }
     #   let(:args) { [true] }
     #   let(:expected_result) { false }
@@ -182,7 +182,7 @@ RSpec.describe Wasmtime::Func do
     # end
 
     # context 'str_string export' do
-    #   let(:export) { :str_string }
+    #   let(:export) { 'str_string' }
     #   let(:expected_signature) { { params: %w[String], result: 'String' } }
     #   let(:args) { %w[Ruby] }
     #   let(:expected_result) { 'Hello, Ruby!' }
@@ -191,7 +191,7 @@ RSpec.describe Wasmtime::Func do
     # end
 
     context 'add export' do
-      let(:export) { :add }
+      let(:export) { 'add' }
       let(:expected_signature) do
         { params: %w[Integer32 Integer32], result: 'Integer32' }
       end
@@ -204,7 +204,7 @@ RSpec.describe Wasmtime::Func do
 
   # context 'with markdown module render export' do
   #   let(:module_path) { 'wasm/markdown.wasm' }
-  #   let(:export) { :render }
+  #   let(:export) { 'render' }
   #   let(:expected_signature) { { params: %w[String], result: 'String' } }
   #   let(:args) { ['# Hello, Ruby!'] }
   #   let(:expected_result) { "<h1>Hello, Ruby!</h1>\n" }

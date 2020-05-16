@@ -60,8 +60,11 @@ module Wasmtime
       end
     mod = Object.const_set(module_name.camelize, Module.new)
     instance = Wasmtime::Instance.new(absolute_path)
-    instance.funcs.each do |name, func|
-      mod.define_singleton_method(name) { |*args| func.call(*args) }
+    instance.exports.each do |name, export|
+      case export
+      when Wasmtime::Func
+        mod.define_singleton_method(name) { |*args| export.call(*args) }
+      end
     end
     $LOADED_FEATURES << absolute_path
     true

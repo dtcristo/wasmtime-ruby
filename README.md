@@ -83,7 +83,7 @@ use this approach too.
 require 'wasmtime'
 
 instance = Wasmtime::Instance.new('fibonacci.wat')
-puts instance.funcs[:fib].call(11) #=> 89
+puts instance.exports['fib'].call(11) #=> 89
 ```
 
 ## Benchmarks

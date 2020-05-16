@@ -1,3 +1,4 @@
+mod export;
 mod func;
 mod instance;
 mod memory;
@@ -16,4 +17,5 @@ pub extern "C" fn Init_native() {
 
     instance::ruby_init();
     func::ruby_init();
+    memory::ruby_init();
 }
