@@ -19,8 +19,8 @@ impl From<RubyType> for AnyObject {
     }
 }
 
-impl From<&w::ValType> for RubyType {
-    fn from(val_type: &w::ValType) -> Self {
+impl From<w::ValType> for RubyType {
+    fn from(val_type: w::ValType) -> Self {
         match val_type {
             w::ValType::I32 => RubyType::Integer32,
             w::ValType::I64 => RubyType::Integer64,

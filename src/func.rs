@@ -28,7 +28,6 @@ impl Func {
         self.func
             .ty()
             .params()
-            .iter()
             .map(|val_type| val_type.into())
             .collect()
     }
@@ -36,7 +35,7 @@ impl Func {
     fn parse_result_type(&self) -> RubyType {
         match self.func.ty().results().len() {
             0 => RubyType::NilClass,
-            1 => self.func.ty().results().first().unwrap().into(),
+            1 => self.func.ty().results().next().unwrap().into(),
             _ => raise("StandardError", "multiple return values are not supported"),
         }
     }

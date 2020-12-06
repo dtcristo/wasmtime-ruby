@@ -20,9 +20,9 @@ impl Instance {
 
         let engine = w::Engine::new(&config);
         let store = w::Store::new(&engine);
-        let module = w::Module::new(&store, &wasm).expect("failed to create module");
+        let module = w::Module::new(&engine, &wasm).expect("failed to create module");
         let imports: Vec<w::Extern> = Vec::new();
-        let instance = w::Instance::new(&module, &imports).expect("failed to create instance");
+        let instance = w::Instance::new(&store, &module, &imports).expect("failed to create instance");
 
         Instance { instance }
     }

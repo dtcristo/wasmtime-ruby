@@ -7,11 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `wasmtime` crate to `0.21.0` and tweaked some things to support this version.
+
 ## [0.2.0] - 2020-05-19
+
+### Added
+
+- Support for `Wasmtime::Memory` exports with `#data_size`, `#size` and `#grow` methods.
+
+### Changed
 
 - Exported functions now live on `Wasmtime::Instance#exports` instead of `#funcs`.
 - Exports hash is now keyed by strings instead of symbols.
-- Added support for `Wasmtime::Memory` exports with `#data_size`, `#size` and `#grow` methods.
 
 ## [0.1.0] - 2020-05-07
 
