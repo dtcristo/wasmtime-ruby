@@ -11,4 +11,4 @@ crate-type = ["cdylib"]
 [dependencies]
 lazy_static = "1.4.0"
 rutie = "0.7.0"
-wasmtime = "0.21.0"
+wasmtime = "0.38.1"
