@@ -1,3 +1,5 @@
+**Deprecated: Replaced by [official embedding](https://github.com/bytecodealliance/wasmtime-rb).**
+
 <div align="center">
   <h1>wasmtime-ruby</h1>
   <p>
